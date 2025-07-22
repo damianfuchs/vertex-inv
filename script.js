@@ -24,7 +24,7 @@ sidebarLinks.forEach(link => {
         const page = this.getAttribute('data-page');
 
         // Cargar el archivo HTML correspondiente en el <main>
-        fetch(`modulos/${page}.html`)
+        fetch(`modulos/${page}.php`)
             .then(response => response.text())
             .then(html => {
                 main.innerHTML = html;
@@ -40,6 +40,51 @@ sidebarLinks.forEach(link => {
         main.classList.remove('menu-toggle');
     });
 });
+
+
+
+document.addEventListener('submit', function(e) {
+    if (e.target && e.target.id === 'formAgregarCategoria') {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        fetch('modulos/agregar_categoria.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Categoría agregada con éxito');
+                // Opcional: cerrar modal y recargar listado categorías
+                form.reset();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarCategoria'));
+                modal.hide();
+
+                // Recargar tabla categorías llamando al módulo o hacer fetch para actualizar tabla
+                // Por ejemplo:
+                fetch('modulos/categorias.php')
+                    .then(r => r.text())
+                    .then(html => {
+                        main.innerHTML = html;
+                    });
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al agregar categoría');
+        });
+    }
+});
+
+
+
+
+
 
 // Cierra el sidebar al hacer clic fuera de él y del botón de menú
 document.addEventListener('click', (e) => {
@@ -57,7 +102,7 @@ document.addEventListener('click', (e) => {
 
 // Al recargar la página, cargar inicio.html por defecto
 window.addEventListener('DOMContentLoaded', () => {
-    fetch('modulos/inicio.html')
+    fetch('modulos/inicio.php')
         .then(response => response.text())
         .then(html => {
             main.innerHTML = html;
@@ -84,7 +129,7 @@ main.addEventListener('click', function (e) {
     if (card && card.dataset.page) {
         const page = card.dataset.page;
 
-        fetch(`modulos/${page}.html`)
+        fetch(`modulos/${page}.php`)
             .then(response => response.text())
             .then(html => {
                 main.innerHTML = html;

@@ -1,12 +1,12 @@
 <?php
 $host = "localhost";
-$usuario = "root"; // o tu usuario
-$contrasenia = ""; // o la contraseña
-$basedatos = "vertex_inv"; // reemplazalo
+$usuario = "root"; 
+$contrasenia = "";
+$basedatos = "vertex_inv";
 
-$conn = new mysqli($host, $usuario, $contrasenia, $basedatos);
+$conexion = new mysqli($host, $usuario, $contrasenia, $basedatos);
 
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+if ($conexion->connect_error) {
+    die("Conexión fallida: " . $conexion->connect_error);
 }
 ?>
