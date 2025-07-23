@@ -1,5 +1,5 @@
 <?php
-include('./db/conexion.php');?>
+include('./db/conexion.php'); ?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -9,8 +9,11 @@ include('./db/conexion.php');?>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Productos</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Incluí Bootstrap (si no lo tenés aún en tu layout principal) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         .table img {
             max-width: 50px;
@@ -28,131 +31,313 @@ include('./db/conexion.php');?>
 </head>
 
 <body>
-    
-    <div class="container-fluid px-0">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto"
-            style="margin-bottom: 28px;">
-            <i class="bi bi-box me-1"></i> Agregar Producto
-        </button>
 
-        <!-- Modal para agregar producto (tu modal original) -->
-        <div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-labelledby="modalAgregarProductoLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+    <button type="button" class="btn btn-success" style="margin-bottom: 28px;" data-bs-toggle="modal"
+        data-bs-target="#modalAgregar">
+        <i class="bi bi-box"></i> Agregar Prodúcto
+    </button>
 
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalAgregarProductoLabel">Agregar Producto</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
 
-                    <div class="modal-body">
-                        <form action="agregar_producto.php" method="POST" enctype="multipart/form-data">
-                            
-                            <div class="mb-2">
-                                <label for="codigo" class="form-label">Código</label>
-                                <input type="text" class="form-control" name="codigo" required />
-                            </div>
-                            <div class="mb-2">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" name="nombre" required />
-                            </div>
-                            <div class="mb-2">
-                                <label for="descripcion" class="form-label">Descripción</label>
-                                <input type="text" class="form-control" name="descripcion" required />
-                            </div>
-                            <div class="mb-2">
-                                <label for="material" class="form-label">Material</label>
-                                <input type="text" class="form-control" name="material" required />
-                            </div>
-                            <div class="mb-2">
-                                <label for="stock" class="form-label">Stock</label>
-                                <input type="number" class="form-control" name="stock" required />
-                            </div>
-                            <div class="mb-2">
-                                <label for="ubicacion" class="form-label">Ubicación</label>
-                                <input type="text" class="form-control" name="ubicacion" required />
-                            </div>
-                            <div class="mb-2">
-                                <label for="peso" class="form-label">Peso</label>
-                                <input type="number" step="0.01" class="form-control" name="peso" required />
-                            </div>
-                            <div class="mb-2">
-                                <label for="imagen" class="form-label">Imagen del producto</label>
-                                <input type="file" class="form-control" name="imagen" accept="image/*" required />
-                            </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>    
+                    <th>Categoría</th> <!-- NUEVO -->
+                    <th>Materia</th>
+                    <th>Peso</th>
+                    <th>Stock</th>
+                    <th>Ubicación</th>
+                    <th>Imagen</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // JOIN con categorias para obtener nombre_categ
+                $consulta = "
+                SELECT p.*, c.nombre_categ 
+                FROM productos p
+                JOIN categorias c ON p.categoria_id = c.id_categ
+                 ";
+                $resultado = $conexion->query($consulta);
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </div>
-                        </form>
-                    </div>
+                while ($fila = $resultado->fetch_assoc()):
+                    ?>
+                    <tr>
+                        <td><?= htmlspecialchars($fila['id_prod']) ?></td>
+                        <td><?= htmlspecialchars($fila['codigo_prod']) ?></td>
+                        <td><?= htmlspecialchars($fila['nombre_prod']) ?></td>
+                        <td><?= htmlspecialchars($fila['descripcion_prod']) ?></td>
+                        <td><?= htmlspecialchars($fila['nombre_categ']) ?></td> <!-- NUEVO -->
+                        <td><?= htmlspecialchars($fila['materia_prod']) ?></td>
+                        <td><?= htmlspecialchars($fila['peso_prod']) ?> kg</td>
+                        <td><?= htmlspecialchars($fila['stock_prod']) ?></td>
+                        <td><?= htmlspecialchars($fila['ubicacion_prod']) ?></td>
+                        <td>
+                            <?php if (!empty($fila['imagen_prod'])): ?>
+                                <img src="./img/<?= htmlspecialchars($fila['imagen_prod']) ?>" alt="Imagen"
+                                    style="max-width: 50px;">
+                            <?php else: ?>
+                                Sin imagen
+                            <?php endif; ?>
+                        </td>
 
+                        <td>
+                            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalVer"
+                                data-id="<?= $fila['id_prod'] ?>"
+                                data-codigo="<?= htmlspecialchars($fila['codigo_prod']) ?>"
+                                data-nombre="<?= htmlspecialchars($fila['nombre_prod']) ?>"
+                                data-descripcion="<?= htmlspecialchars($fila['descripcion_prod']) ?>"
+                                data-materia="<?= htmlspecialchars($fila['materia_prod']) ?>"
+                                data-peso="<?= htmlspecialchars($fila['peso_prod']) ?>"
+                                data-stock="<?= htmlspecialchars($fila['stock_prod']) ?>"
+                                data-ubicacion="<?= htmlspecialchars($fila['ubicacion_prod']) ?>"
+                                data-imagen="<?= htmlspecialchars($fila['imagen_prod']) ?>"
+                                data-categoria="<?= htmlspecialchars($fila['nombre_categ']) ?>"> <!-- NUEVO -->
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar"
+                                data-id="<?= $fila['id_prod'] ?>"
+                                data-codigo="<?= htmlspecialchars($fila['codigo_prod']) ?>"
+                                data-nombre="<?= htmlspecialchars($fila['nombre_prod']) ?>"
+                                data-descripcion="<?= htmlspecialchars($fila['descripcion_prod']) ?>"
+                                data-categoriaid="<?= $fila['categoria_id'] ?>"
+                                data-materia="<?= htmlspecialchars($fila['materia_prod']) ?>"
+                                data-peso="<?= htmlspecialchars($fila['peso_prod']) ?>"
+                                data-stock="<?= htmlspecialchars($fila['stock_prod']) ?>"
+                                data-ubicacion="<?= htmlspecialchars($fila['ubicacion_prod']) ?>"
+                                data-imagen="<?= htmlspecialchars($fila['imagen_prod']) ?>">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+
+                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalEliminar"
+                                data-id="<?= $fila['id_prod'] ?>">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <!-- Modal Ver -->
+    <div class="modal fade" id="modalVer" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">Ver Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Código:</strong> <span id="verCodigo"></span></p>
+                    <p><strong>Nombre:</strong> <span id="verNombre"></span></p>
+                    <p><strong>Descripción:</strong> <span id="verDescripcion"></span></p>
+                    <p><strong>Categoría:</strong> <span id="verCategoria"></span></p> <!-- NUEVO -->
+                    <p><strong>Materia:</strong> <span id="verMateria"></span></p>
+                    <p><strong>Peso:</strong> <span id="verPeso"></span> kg</p>
+                    <p><strong>Stock:</strong> <span id="verStock"></span></p>
+                    <p><strong>Ubicación:</strong> <span id="verUbicacion"></span></p>
+                    <p><strong>Imagen:</strong><br>
+                        <img id="verImagen" src="" alt="Imagen del producto" style="max-width: 150px;">
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
-    
 
-    <!-- Tabla de productos -->
-    <div class="table-responsive">
-        <table class="table table-striped" id="tablaProductos">
-            <thead class="table-dark">
-                <tr>
-                    <th scope="col" class="py-1 px-2">ID</th>
-                    <th scope="col" class="py-1 px-2">Código</th>
-                    <th scope="col" class="py-1 px-2">Nombre</th>
-                    <th scope="col" class="py-1 px-2">Descripción</th>
-                    <th scope="col" class="py-1 px-2">Material</th>
-                    <th scope="col" class="py-1 px-2">Cantidad</th>
-                    <th scope="col" class="py-1 px-2">Ubicación</th>
-                    <th scope="col" class="py-1 px-2">Peso (kg)</th>
-                    <th scope="col" class="py-1 px-2">Imagen</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-productos">
-                <?php
-                $sql = "SELECT id_prod, codigo_prod, nombre_prod, descripcion_prod, materia_prod, stock_prod, ubicacion_prod, peso_prod, imagen_prod FROM productos";
-                $resultado = $conexion->query($sql);
 
-                if ($resultado->num_rows > 0) {
-                    while ($fila = $resultado->fetch_assoc()) {
-                        echo "<tr
-                            data-id='" . htmlspecialchars($fila['id_prod']) . "'
-                            data-codigo='" . htmlspecialchars($fila['codigo_prod']) . "'
-                            data-nombre='" . htmlspecialchars($fila['nombre_prod']) . "'
-                            data-descripcion='" . htmlspecialchars($fila['descripcion_prod']) . "'
-                            data-material='" . htmlspecialchars($fila['materia_prod']) . "'
-                            data-stock='" . htmlspecialchars($fila['stock_prod']) . "'
-                            data-ubicacion='" . htmlspecialchars($fila['ubicacion_prod']) . "'
-                            data-peso='" . htmlspecialchars($fila['peso_prod']) . "'
-                            data-imagen='" . htmlspecialchars($fila['imagen_prod']) . "'
-                            >";
-                        echo "<td class='py-1 px-2 id_prod'>" . htmlspecialchars($fila['id_prod']) . "</td>";
-                        echo "<td class='py-1 px-2 codigo'>" . htmlspecialchars($fila['codigo_prod']) . "</td>";
-                        echo "<td class='py-1 px-2 nombre'>" . htmlspecialchars($fila['nombre_prod']) . "</td>";
-                        echo "<td class='py-1 px-2 descripcion'>" . htmlspecialchars($fila['descripcion_prod']) . "</td>";
-                        echo "<td class='py-1 px-2 material'>" . htmlspecialchars($fila['materia_prod']) . "</td>";
-                        echo "<td class='py-1 px-2 stock'>" . htmlspecialchars($fila['stock_prod']) . "</td>";
-                        echo "<td class='py-1 px-2 ubicacion'>" . htmlspecialchars($fila['ubicacion_prod']) . "</td>";
-                        echo "<td class='py-1 px-2 peso'>" . htmlspecialchars($fila['peso_prod']) . "</td>";
-                        echo "<td><img src='../img/" . htmlspecialchars($fila['imagen_prod']) . "' alt='Imagen' style='max-width:50px; height:auto;'></td>";    
-                        echo "</tr>";
-                    }       
-                } else {
-                    echo "<tr><td colspan='9' class='py-2 px-2 text-center'>No hay productos registrados.</td></tr>";
-                }
-                $conexion->close();
-                ?>
-            </tbody>
-        </table>
+    <!-- Modal Editar -->
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formEditarProducto" class="modal-content" method="post" action="modulos/editar_producto.php"
+                enctype="multipart/form-data" onsubmit="return enviarFormulario(event)">
+
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">Editar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id_prod" id="editarId">
+
+                    <div class="mb-2">
+                        <label>Código:</label>
+                        <input type="text" name="codigo_prod" id="editarCodigo" class="form-control">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Nombre:</label>
+                        <input type="text" name="nombre_prod" id="editarNombre" class="form-control">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Descripción:</label>
+                        <textarea name="descripcion_prod" id="editarDescripcion" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Categoría:</label>
+                        <select name="categoria_id" id="editarCategoria" class="form-control">
+                            <option value="">Seleccione una categoría</option>
+                            <?php
+                            // Cargar las categorías desde la base de datos
+                            $categorias = $conexion->query("SELECT id_categ, nombre_categ FROM categorias");
+                            while ($cat = $categorias->fetch_assoc()):
+                                ?>
+                                <option value="<?= $cat['id_categ'] ?>"><?= htmlspecialchars($cat['nombre_categ']) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Materia:</label>
+                        <input type="text" name="materia_prod" id="editarMateria" class="form-control">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Peso (kg):</label>
+                        <input type="number" step="0.01" name="peso_prod" id="editarPeso" class="form-control">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Stock:</label>
+                        <input type="number" name="stock_prod" id="editarStock" class="form-control">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Ubicación:</label>
+                        <input type="number" name="ubicacion_prod" id="editarUbicacion" class="form-control">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Imagen:</label>
+                        <input type="file" name="imagen_prod" id="editarImagen" class="form-control" accept="image/*">
+                        <small>Imagen actual: <span id="nombreImagenActual"></span></small>
+                    </div>
+
+
+                </div>
+                <div id="mensajeExito" class="alert alert-success" role="alert" style="display:none; margin-top:10px;">
+                    Producto Editado con éxito.
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                </div>
+
+
+            </form>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal Eliminar -->
+    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formEliminar" class="modal-content" method="post" action="modulos/eliminar_producto.php">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Eliminar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que querés eliminar este producto?
+                    <input type="hidden" name="id_prod" id="eliminarId">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-   
+
+
+
+
+    <!-- Modal Agregar Producto -->
+    <div class="modal fade" id="modalAgregar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formAgregarProducto" class="modal-content" method="post" action="modulos/agregar_producto.php"
+                enctype="multipart/form-data" onsubmit="return enviarAgregarProducto(event)">
+
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Agregar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label>Código:</label>
+                        <input type="text" name="codigo_prod" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label>Nombre:</label>
+                        <input type="text" name="nombre_prod" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label>Descripción:</label>
+                        <textarea name="descripcion_prod" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-2">
+                        <label>Categoría:</label>
+                        <select name="categoria_id" class="form-control" required>
+                            <option value="">Seleccione una categoría</option>
+                            <?php
+                            $categorias = $conexion->query("SELECT id_categ, nombre_categ FROM categorias");
+                            while ($cat = $categorias->fetch_assoc()):
+                                ?>
+                                <option value="<?= $cat['id_categ'] ?>"><?= htmlspecialchars($cat['nombre_categ']) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label>Materia:</label>
+                        <input type="text" name="materia_prod" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Peso (kg):</label>
+                        <input type="number" step="0.01" name="peso_prod" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Stock:</label>
+                        <input type="number" name="stock_prod" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Ubicación:</label>
+                        <input type="number" name="ubicacion_prod" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Imagen:</label>
+                        <input type="file" name="imagen_prod" class="form-control" accept="image/*">
+                    </div>
+
+                    <!-- Mensaje de éxito -->
+                    <div id="mensajeAgregarExito" class="alert alert-success" role="alert"
+                        style="display:none; margin-top:10px;">
+                        Producto agregado con éxito.
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Agregar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../script.js"></script>
 </body>
 
 </html>

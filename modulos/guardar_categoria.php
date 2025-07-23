@@ -9,10 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sql = "INSERT INTO categorias (codigo_categ, nombre_categ, descripcion_categ) VALUES ('$codigo_categ', '$nombre_categ', '$descripcion_categ')";
 
     if ($conexion->query($sql)) {
-        echo "Categoría agregada correctamente.";
+        header("Location: ../index.php"); // Cambiá la ruta si querés ir a otra
+        exit;
     } else {
         echo "Error: " . $conexion->error;
     }
 }
 $conexion->close();
-?>
+
+
