@@ -1,5 +1,5 @@
 <?php
-include 'db/conexion.php';
+include('../db/conexion.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoria_id = $_POST['categoria_id'] ?? null;
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nombreArchivo = basename($_FILES['imagen_prod']['name']);
         $ext = pathinfo($nombreArchivo, PATHINFO_EXTENSION);
         $nombreArchivoNuevo = uniqid('img_') . "." . $ext;
-        $rutaDestino = "../img/" . $nombreArchivoNuevo;
+        $rutaDestino = "../../img/" . $nombreArchivoNuevo;
 
         if (move_uploaded_file($nombreTmp, $rutaDestino)) {
             $imagen_prod = $nombreArchivoNuevo;

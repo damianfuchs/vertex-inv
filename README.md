@@ -22,7 +22,7 @@ El sistema permite registrar, modificar, buscar y eliminar artículos del invent
 - Búsqueda y filtrado de productos por código, nombre o categoría  
 - Gestión de categorías y proveedores  
 - Visualización de inventario actualizado  
-- Control de stock y precios  
+- Control de stock y precios   
 - Interfaz responsiva y fácil de usar  
 
 ---

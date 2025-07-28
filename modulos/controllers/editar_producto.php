@@ -1,5 +1,5 @@
 <?php
-include 'db/conexion.php';
+include('../db/conexion.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_prod = $_POST['id_prod'] ?? 0;
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['imagen_prod']) && $_FILES['imagen_prod']['error'] === UPLOAD_ERR_OK) {
         $nombreTmp = $_FILES['imagen_prod']['tmp_name'];
         $nombreArchivo = basename($_FILES['imagen_prod']['name']);
-        $rutaDestino = "../img/" . $nombreArchivo;
+        $rutaDestino = "../../img/" . $nombreArchivo;
 
         if (move_uploaded_file($nombreTmp, $rutaDestino)) {
             $imagen_prod = $nombreArchivo;

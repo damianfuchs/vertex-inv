@@ -158,7 +158,7 @@ include('./db/conexion.php'); ?>
     <!-- Modal Editar -->
     <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <form id="formEditarProducto" class="modal-content" method="post" action="modulos/editar_producto.php"
+            <form id="formEditarProducto" class="modal-content" method="post" action="modulos/controllers/editar_producto.php"
                 enctype="multipart/form-data" onsubmit="return enviarFormulario(event)">
 
                 <div class="modal-header bg-warning">
@@ -241,7 +241,7 @@ include('./db/conexion.php'); ?>
     <!-- Modal Eliminar -->
     <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <form id="formEliminar" class="modal-content" method="post" action="modulos/eliminar_producto.php">
+            <form id="formEliminar" class="modal-content" method="post" action="modulos/controllers/eliminar_producto.php">
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title">Eliminar Producto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -259,12 +259,10 @@ include('./db/conexion.php'); ?>
 
 
 
-
-
     <!-- Modal Agregar Producto -->
     <div class="modal fade" id="modalAgregar" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <form id="formAgregarProducto" class="modal-content" method="post" action="modulos/agregar_producto.php"
+            <form id="formAgregarProducto" class="modal-content" method="post" action="modulos/controllers/agregar_producto.php"
                 enctype="multipart/form-data" onsubmit="return enviarAgregarProducto(event)">
 
                 <div class="modal-header bg-success text-white">

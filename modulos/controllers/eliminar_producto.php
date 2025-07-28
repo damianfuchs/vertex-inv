@@ -1,5 +1,5 @@
 <?php
-include 'db/conexion.php';
+include('../db/conexion.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_prod = $_POST['id_prod'] ?? 0;
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
 
     if ($stmt->affected_rows > 0) {
-            header('Location: ../index.php?modulos=productos.php');
+            header('Location: ../../index.php?modulos=productos.php');
             exit;
     } else {
             echo "error";

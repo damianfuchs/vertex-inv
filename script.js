@@ -181,47 +181,6 @@ main.addEventListener('click', function (e) {
     }
 });
 
-document.addEventListener('submit', function (e) {
-    if (e.target && e.target.id === 'formAgregarCategoria') {
-        e.preventDefault();
-
-        const form = e.target;
-        const formData = new FormData(form);
-
-        fetch('modulos/agregar_categoria.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Categoría agregada con éxito');
-                    // Opcional: cerrar modal y recargar listado categorías
-                    form.reset();
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarCategoria'));
-                    modal.hide();
-
-                    // Recargar tabla categorías llamando al módulo o hacer fetch para actualizar tabla
-                    // Por ejemplo:
-                    fetch('modulos/categorias.php')
-                        .then(r => r.text())
-                        .then(html => {
-                            main.innerHTML = html;
-
-                            // Asignar eventos a botones si tiene
-                            asignarEventosBotones();
-                        });
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al agregar categoría');
-            });
-    }
-});
-
 
 
 // EDITAR PRODUCTO
@@ -336,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         formData.append('id_prod', inputEliminar.value);
 
-        fetch('modulos/eliminar_producto.php', {
+        fetch('modulos/controllers/eliminar_producto.php', {
             method: 'POST',
             body: formData
         })
@@ -362,3 +321,93 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+// AGREGAR CATEGORIA
+document.addEventListener('submit', function (e) {
+    if (e.target && e.target.id === 'formAgregarCategoria') {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        fetch('modulos/controllers/agregar_categoria.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Categoría agregada con éxito');
+                    // Opcional: cerrar modal y recargar listado categorías
+                    form.reset();
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarCategoria'));
+                    modal.hide();
+
+                    // Recargar tabla categorías llamando al módulo o hacer fetch para actualizar tabla
+                    // Por ejemplo:
+                    fetch('modulos/categorias.php')
+                        .then(r => r.text())
+                        .then(html => {
+                            main.innerHTML = html;
+
+                            // Asignar eventos a botones si tiene
+                            asignarEventosBotones();
+                        });
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al agregar categoría');
+            });
+    }
+});
+
+//EDITAR CATEGORIA
+document.addEventListener('DOMContentLoaded', () => {
+    // Escucha global para clicks
+    document.addEventListener('click', function (e) {
+        // === BOTÓN EDITAR ===
+        const btnEditar = e.target.closest('.btn-editar');
+        if (btnEditar) {
+            const fila = btnEditar.closest('tr');
+
+            // Asegúrate de que los <tr> tengan estos atributos
+            const id = fila.dataset.id;
+            const codigo = fila.dataset.codigo;
+            const nombre = fila.dataset.nombre;
+            const descripcion = fila.dataset.descripcion;
+
+            // Cargar datos en el formulario del modal
+            document.getElementById('editId').value = id;
+            document.getElementById('editCodigo').value = codigo;
+            document.getElementById('editNombre').value = nombre;
+            document.getElementById('editDescripcion').value = descripcion;
+
+            // Mostrar modal
+            const modalElement = document.getElementById('modalEditarCategoria');
+            if (modalElement) {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            } else {
+                console.error('No se encontró el modal con id "modalEditarCategoria"');
+            }
+        }
+
+    });
+
+});
+
+// ELIMINAR CATEGORIA
+document.addEventListener('DOMContentLoaded', () => {
+    // BOTÓN ELIMINAR
+    document.addEventListener('click', function (e) {
+        const btnEliminar = e.target.closest('.btn-eliminar');
+        if (btnEliminar) {
+            const fila = btnEliminar.closest('tr');
+            const id = fila.getAttribute('data-id');
+            document.getElementById('deleteCategoriaId').value = id;
+        }
+    });
+});
