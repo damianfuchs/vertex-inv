@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
 
     if ($stmt->affected_rows > 0) {
-        header('Location: productos.php?msg=agregado');
+        header('Location: ../../index.php');    
         exit;
     } else {
         echo "Error al agregar producto.";

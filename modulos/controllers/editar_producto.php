@@ -1,61 +1,152 @@
 <?php
+// Incluir la conexión a la base de datos
 include('../db/conexion.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_prod = $_POST['id_prod'] ?? 0;
-    $categoria_id = $_POST['categoria_id'] ?? null;
+// Verificar que la petición sea POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    die('Método no permitido');
+}
+
+try {
+    // Obtener datos del formulario
+    $id_prod = $_POST['id_prod'] ?? '';
     $codigo_prod = $_POST['codigo_prod'] ?? '';
     $nombre_prod = $_POST['nombre_prod'] ?? '';
     $descripcion_prod = $_POST['descripcion_prod'] ?? '';
+    $categoria_id = $_POST['categoria_id'] ?? null;
     $materia_prod = $_POST['materia_prod'] ?? '';
-    $peso_prod = $_POST['peso_prod'] ?? 0;
+    $peso_prod = $_POST['peso_prod'] ?? null;
     $stock_prod = $_POST['stock_prod'] ?? 0;
-    $ubicacion_prod = $_POST['ubicacion_prod'] ?? 0;
+    $ubicacion_prod = $_POST['ubicacion_prod'] ?? '';
 
-    // Primero obtenemos la imagen actual para conservar si no se sube una nueva
-    $sql_img = "SELECT imagen_prod FROM productos WHERE id_prod = ?";
-    $stmt_img = $conexion->prepare($sql_img);
-    $stmt_img->bind_param("i", $id_prod);
-    $stmt_img->execute();
-    $result_img = $stmt_img->get_result();
+    // Validar campos obligatorios
+    if (empty($id_prod) || empty($codigo_prod) || empty($nombre_prod)) {
+        throw new Exception('Faltan campos obligatorios');
+    }
+
+    // Obtener la imagen actual del producto
+    $consulta_imagen_actual = "SELECT imagen_prod FROM productos WHERE id_prod = ?";
+    $stmt_imagen_actual = $conexion->prepare($consulta_imagen_actual);
+    $stmt_imagen_actual->bind_param("i", $id_prod);
+    $stmt_imagen_actual->execute();
+    $resultado_imagen_actual = $stmt_imagen_actual->get_result();
     $imagen_actual = '';
-    if ($row = $result_img->fetch_assoc()) {
-        $imagen_actual = $row['imagen_prod'];
+    
+    if ($fila_imagen = $resultado_imagen_actual->fetch_assoc()) {
+        $imagen_actual = $fila_imagen['imagen_prod'];
     }
-    $stmt_img->close();
 
-    // Manejar nueva imagen (si se subió)
+    // Manejar la imagen si se subió una nueva
+    $imagen_prod = $imagen_actual; // Por defecto, mantener la imagen actual
+    
     if (isset($_FILES['imagen_prod']) && $_FILES['imagen_prod']['error'] === UPLOAD_ERR_OK) {
-        $nombreTmp = $_FILES['imagen_prod']['tmp_name'];
-        $nombreArchivo = basename($_FILES['imagen_prod']['name']);
-        $rutaDestino = "../../img/" . $nombreArchivo;
-
-        if (move_uploaded_file($nombreTmp, $rutaDestino)) {
-            $imagen_prod = $nombreArchivo;
-            // Opcional: borrar la imagen vieja si querés
-            if ($imagen_actual && file_exists("img/" . $imagen_actual)) {
-                unlink("img/" . $imagen_actual);
-            }
-        } else {
-            $imagen_prod = $imagen_actual;
+        $archivo = $_FILES['imagen_prod'];
+        $nombre_archivo = $archivo['name'];
+        $tmp_name = $archivo['tmp_name'];
+        $extension = strtolower(pathinfo($nombre_archivo, PATHINFO_EXTENSION));
+        
+        // Validar extensión
+        $extensiones_permitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (!in_array($extension, $extensiones_permitidas)) {
+            throw new Exception('Formato de imagen no permitido');
         }
-    } else {
-        $imagen_prod = $imagen_actual;
+        
+        // Validar tamaño (máximo 5MB)
+        if ($archivo['size'] > 5 * 1024 * 1024) {
+            throw new Exception('La imagen es demasiado grande. Máximo 5MB');
+        }
+        
+        // Generar nombre único
+        $nuevo_nombre = 'producto_' . $id_prod . '_' . time() . '.' . $extension;
+        $ruta_destino = '../../img/' . $nuevo_nombre;
+        
+        // Crear directorio si no existe
+        if (!file_exists('../../img/')) {
+            mkdir('../../img/', 0777, true);
+        }
+        
+        // Mover archivo
+        if (move_uploaded_file($tmp_name, $ruta_destino)) {
+            // Eliminar imagen anterior si existe y es diferente
+            if ($imagen_actual && $imagen_actual !== $nuevo_nombre && file_exists('../img/' . $imagen_actual)) {
+                unlink('../img/' . $imagen_actual);
+            }
+            $imagen_prod = $nuevo_nombre;
+        } else {
+            throw new Exception('Error al subir la imagen');
+        }
     }
 
-    // Actualizar producto
-    $sql = "UPDATE productos SET categoria_id=?, codigo_prod=?, nombre_prod=?, descripcion_prod=?, materia_prod=?, peso_prod=?, stock_prod=?, ubicacion_prod=?, imagen_prod=? WHERE id_prod=?";
+    // Preparar la consulta SQL - SIEMPRE actualizar la imagen (aunque sea la misma)
+    $sql = "UPDATE productos SET 
+            codigo_prod = ?, 
+            nombre_prod = ?, 
+            descripcion_prod = ?, 
+            categoria_id = ?, 
+            materia_prod = ?, 
+            peso_prod = ?, 
+            stock_prod = ?, 
+            ubicacion_prod = ?, 
+            imagen_prod = ?
+            WHERE id_prod = ?";
+    
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("isssssdisi", $categoria_id, $codigo_prod, $nombre_prod, $descripcion_prod, $materia_prod, $peso_prod, $stock_prod, $ubicacion_prod, $imagen_prod, $id_prod);
-    $stmt->execute();
+    $stmt->bind_param("sssississi", 
+        $codigo_prod, 
+        $nombre_prod, 
+        $descripcion_prod, 
+        $categoria_id, 
+        $materia_prod, 
+        $peso_prod, 
+        $stock_prod, 
+        $ubicacion_prod, 
+        $imagen_prod, 
+        $id_prod
+    );
 
-    if ($stmt->affected_rows >= 0) {
-        header('Location: productos.php?msg=editado');
+    // Ejecutar la consulta
+    if ($stmt->execute()) {
+        // Obtener los datos actualizados del producto
+        $consulta_actualizada = "SELECT p.*, c.nombre_categ 
+                                FROM productos p
+                                LEFT JOIN categorias c ON p.categoria_id = c.id_categ 
+                                WHERE p.id_prod = ?";
+        $stmt_actualizada = $conexion->prepare($consulta_actualizada);
+        $stmt_actualizada->bind_param("i", $id_prod);
+        $stmt_actualizada->execute();
+        $resultado_actualizada = $stmt_actualizada->get_result();
+        $producto_actualizado = $resultado_actualizada->fetch_assoc();
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Producto editado correctamente',
+            'id' => $id_prod,
+            'producto' => $producto_actualizado
+        ]);
     } else {
-        echo "Error al actualizar producto.";
+        throw new Exception('Error al ejecutar la consulta: ' . $stmt->error);
     }
 
-    $stmt->close();
-    $conexion->close();
+} catch (Exception $e) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
+} finally {
+    // Cerrar conexiones
+    if (isset($stmt)) {
+        $stmt->close();
+    }
+    if (isset($stmt_imagen_actual)) {
+        $stmt_imagen_actual->close();
+    }
+    if (isset($stmt_actualizada)) {
+        $stmt_actualizada->close();
+    }
+    if (isset($conexion)) {
+        $conexion->close();
+    }
 }
 ?>
