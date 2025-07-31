@@ -3,6 +3,7 @@ include('./db/conexion.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,27 +20,98 @@ include('./db/conexion.php');
             height: auto;
             object-fit: contain;
         }
+
         tr:hover {
             cursor: pointer;
             background-color: #f5f5f5;
         }
+
         .badge-activo {
             background-color: #28a745;
             color: white;
         }
+
         .badge-inactivo {
             background-color: #dc3545;
             color: white;
         }
+
+        .mensaje-flotante {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1055;
+            /* más alto que modal para que se vea */
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.3rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            font-weight: 500;
+            color: white;
+            opacity: 0.95;
+            transition: opacity 0.3s ease;
+        }
+
+        .mensaje-flotante.alert-success {
+            background-color: #198754;
+            /* verde Bootstrap */
+        }
+
+        .mensaje-flotante.alert-danger {
+            background-color: #dc3545;
+            /* rojo Bootstrap */
+        }
+
+        .mensaje-flotante.d-none {
+            display: none;
+        }
+
+        .modern-title {
+            font-family: 'Nunito Sans', sans-serif;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .modern-title i {
+            font-size: 1.8rem;
+            color: #3498db;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .modern-title:hover {
+            color: #2980b9;
+        }
+
+        .modern-title:hover i {
+            color: #2980b9;
+            transform: scale(1.1) rotate(10deg);
+        }
     </style>
 </head>
+
 <body>
     <div class="container-fluid mt-0">
-        <h2>Gestión de Proveedores</h2>
-        
-        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAgregarProveedor">
+        <h2 class="modern-title mb-4">
+            <i class="bi bi-truck"></i> Gestión de Proveedores
+        </h2>
+
+
+
+
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+            data-bs-target="#modalAgregarProveedor">
             <i class="bi bi-building-add"></i> Agregar Proveedor
         </button>
+
+
+        <div id="mensajeProveedor" class="mensaje-flotante d-none" role="alert"></div>
 
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
@@ -59,76 +131,68 @@ include('./db/conexion.php');
                     <?php
                     $consulta = "SELECT * FROM proveedores ORDER BY nombre_proveedores";
                     $resultado = $conexion->query($consulta);
-                    
+
                     if (!$resultado) {
                         echo "<tr><td colspan='8'>Error en la consulta: " . $conexion->error . "</td></tr>";
                     } else {
                         while ($fila = $resultado->fetch_assoc()):
-                    ?>
-                        <tr>
-                            <td><?= $fila['id_proveedores'] ?></td>
-                            <td><?= htmlspecialchars($fila['nombre_proveedores'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($fila['nombre_contacto_proveedores'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($fila['email_proveedores'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($fila['telefono_proveedores'] ?? '') ?></td>
-                            <td><?= htmlspecialchars($fila['ubicacion_proveedores'] ?? '') ?></td>
-                            <td>
-                                <?php if ($fila['estado_proveedores'] == 1): ?>
-                                    <span class="badge badge-activo">Activo</span>
-                                <?php else: ?>
-                                    <span class="badge badge-inactivo">No Activo</span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-info btn-ver" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#modalVerProveedor"
-                                    data-id="<?= $fila['id_proveedores'] ?>"
-                                    data-nombre="<?= htmlspecialchars($fila['nombre_proveedores'] ?? '') ?>"
-                                    data-contacto="<?= htmlspecialchars($fila['nombre_contacto_proveedores'] ?? '') ?>"
-                                    data-email="<?= htmlspecialchars($fila['email_proveedores'] ?? '') ?>"
-                                    data-telefono="<?= htmlspecialchars($fila['telefono_proveedores'] ?? '') ?>"
-                                    data-direccion="<?= htmlspecialchars($fila['direccion_proveedores'] ?? '') ?>"
-                                    data-ubicacion="<?= htmlspecialchars($fila['ubicacion_proveedores'] ?? '') ?>"
-                                    data-codigopostal="<?= htmlspecialchars($fila['codigo_postal_proveedores'] ?? '') ?>"
-                                    data-sitioweb="<?= htmlspecialchars($fila['sitio_web_proveedores'] ?? '') ?>"
-                                    data-horario="<?= htmlspecialchars($fila['horario_atencion_proveedores'] ?? '') ?>"
-                                    data-observaciones="<?= htmlspecialchars($fila['observacion_proveedores'] ?? '') ?>"
-                                    data-estado="<?= $fila['estado_proveedores'] ?>"
-                                    title="Ver detalles">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                
-                                <button class="btn btn-sm btn-warning btn-editar" 
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarProveedor" 
-                                    data-id="<?= $fila['id_proveedores'] ?>"
-                                    data-nombre="<?= htmlspecialchars($fila['nombre_proveedores'] ?? '') ?>"
-                                    data-contacto="<?= htmlspecialchars($fila['nombre_contacto_proveedores'] ?? '') ?>"
-                                    data-email="<?= htmlspecialchars($fila['email_proveedores'] ?? '') ?>"
-                                    data-telefono="<?= htmlspecialchars($fila['telefono_proveedores'] ?? '') ?>"
-                                    data-direccion="<?= htmlspecialchars($fila['direccion_proveedores'] ?? '') ?>"
-                                    data-ubicacion="<?= htmlspecialchars($fila['ubicacion_proveedores'] ?? '') ?>"
-                                    data-codigopostal="<?= htmlspecialchars($fila['codigo_postal_proveedores'] ?? '') ?>"
-                                    data-sitioweb="<?= htmlspecialchars($fila['sitio_web_proveedores'] ?? '') ?>"
-                                    data-horario="<?= htmlspecialchars($fila['horario_atencion_proveedores'] ?? '') ?>"
-                                    data-observaciones="<?= htmlspecialchars($fila['observacion_proveedores'] ?? '') ?>"
-                                    data-estado="<?= $fila['estado_proveedores'] ?>"
-                                    title="Editar">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                
-                                <button class="btn btn-sm btn-danger btn-eliminar" 
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEliminarProveedor" 
-                                    data-id="<?= $fila['id_proveedores'] ?>"
-                                    data-nombre="<?= htmlspecialchars($fila['nombre_proveedores'] ?? '') ?>"
-                                    title="Eliminar">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php 
+                            ?>
+                            <tr>
+                                <td><?= $fila['id_proveedores'] ?></td>
+                                <td><?= htmlspecialchars($fila['nombre_proveedores'] ?? '') ?></td>
+                                <td><?= htmlspecialchars($fila['nombre_contacto_proveedores'] ?? '') ?></td>
+                                <td><?= htmlspecialchars($fila['email_proveedores'] ?? '') ?></td>
+                                <td><?= htmlspecialchars($fila['telefono_proveedores'] ?? '') ?></td>
+                                <td><?= htmlspecialchars($fila['ubicacion_proveedores'] ?? '') ?></td>
+                                <td>
+                                    <?php if ($fila['estado_proveedores'] == 1): ?>
+                                        <span class="badge badge-activo">Activo</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-inactivo">No Activo</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info btn-ver" data-bs-toggle="modal"
+                                        data-bs-target="#modalVerProveedor" data-id="<?= $fila['id_proveedores'] ?>"
+                                        data-nombre="<?= htmlspecialchars($fila['nombre_proveedores'] ?? '') ?>"
+                                        data-contacto="<?= htmlspecialchars($fila['nombre_contacto_proveedores'] ?? '') ?>"
+                                        data-email="<?= htmlspecialchars($fila['email_proveedores'] ?? '') ?>"
+                                        data-telefono="<?= htmlspecialchars($fila['telefono_proveedores'] ?? '') ?>"
+                                        data-direccion="<?= htmlspecialchars($fila['direccion_proveedores'] ?? '') ?>"
+                                        data-ubicacion="<?= htmlspecialchars($fila['ubicacion_proveedores'] ?? '') ?>"
+                                        data-codigopostal="<?= htmlspecialchars($fila['codigo_postal_proveedores'] ?? '') ?>"
+                                        data-sitioweb="<?= htmlspecialchars($fila['sitio_web_proveedores'] ?? '') ?>"
+                                        data-horario="<?= htmlspecialchars($fila['horario_atencion_proveedores'] ?? '') ?>"
+                                        data-observaciones="<?= htmlspecialchars($fila['observacion_proveedores'] ?? '') ?>"
+                                        data-estado="<?= $fila['estado_proveedores'] ?>" title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+
+                                    <button class="btn btn-sm btn-warning btn-editar" data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarProveedor" data-id="<?= $fila['id_proveedores'] ?>"
+                                        data-nombre="<?= htmlspecialchars($fila['nombre_proveedores'] ?? '') ?>"
+                                        data-contacto="<?= htmlspecialchars($fila['nombre_contacto_proveedores'] ?? '') ?>"
+                                        data-email="<?= htmlspecialchars($fila['email_proveedores'] ?? '') ?>"
+                                        data-telefono="<?= htmlspecialchars($fila['telefono_proveedores'] ?? '') ?>"
+                                        data-direccion="<?= htmlspecialchars($fila['direccion_proveedores'] ?? '') ?>"
+                                        data-ubicacion="<?= htmlspecialchars($fila['ubicacion_proveedores'] ?? '') ?>"
+                                        data-codigopostal="<?= htmlspecialchars($fila['codigo_postal_proveedores'] ?? '') ?>"
+                                        data-sitioweb="<?= htmlspecialchars($fila['sitio_web_proveedores'] ?? '') ?>"
+                                        data-horario="<?= htmlspecialchars($fila['horario_atencion_proveedores'] ?? '') ?>"
+                                        data-observaciones="<?= htmlspecialchars($fila['observacion_proveedores'] ?? '') ?>"
+                                        data-estado="<?= $fila['estado_proveedores'] ?>" title="Editar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+
+                                    <button class="btn btn-sm btn-danger btn-eliminar" data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminarProveedor" data-id="<?= $fila['id_proveedores'] ?>"
+                                        data-nombre="<?= htmlspecialchars($fila['nombre_proveedores'] ?? '') ?>"
+                                        title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php
                         endwhile;
                     }
                     ?>
@@ -155,18 +219,20 @@ include('./db/conexion.php');
                         </div>
                         <div class="col-md-6">
                             <p>
-                                <strong>Email:</strong> 
+                                <strong>Email:</strong>
                                 <span id="verEmail">-</span>
-                                <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copiarTexto('verEmail', this)" title="Copiar email">
+                                <button type="button" class="btn btn-sm btn-outline-primary ms-2"
+                                    onclick="copiarTexto('verEmail', this)" title="Copiar email">
                                     <i class="bi bi-clipboard"></i>
                                 </button>
                             </p>
                         </div>
                         <div class="col-md-6">
                             <p>
-                                <strong>Teléfono:</strong> 
+                                <strong>Teléfono:</strong>
                                 <span id="verTelefono">-</span>
-                                <button type="button" class="btn btn-sm btn-outline-success ms-2" onclick="copiarTexto('verTelefono', this)" title="Copiar teléfono">
+                                <button type="button" class="btn btn-sm btn-outline-success ms-2"
+                                    onclick="copiarTexto('verTelefono', this)" title="Copiar teléfono">
                                     <i class="bi bi-clipboard"></i>
                                 </button>
                             </p>
@@ -202,9 +268,11 @@ include('./db/conexion.php');
     </div>
 
     <!-- Modal Editar Proveedor -->
-    <div class="modal fade" id="modalEditarProveedor" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditarProveedor" tabindex="-1" aria-labelledby="modalEditarLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <form id="formEditarProveedor" class="modal-content" method="POST" action="modulos/controllers/editar_proveedor.php">
+            <form id="formEditarProveedor" class="modal-content" method="POST"
+                action="modulos/controllers/editar_proveedor.php">
                 <div class="modal-header bg-warning text-dark">
                     <h5 class="modal-title" id="modalEditarLabel">Editar Proveedor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -214,11 +282,13 @@ include('./db/conexion.php');
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="editarNombre" class="form-label">Nombre *</label>
-                            <input type="text" class="form-control" id="editarNombre" name="nombre_proveedores" required>
+                            <input type="text" class="form-control" id="editarNombre" name="nombre_proveedores"
+                                required>
                         </div>
                         <div class="col-md-6">
                             <label for="editarContacto" class="form-label">Contacto</label>
-                            <input type="text" class="form-control" id="editarContacto" name="nombre_contacto_proveedores">
+                            <input type="text" class="form-control" id="editarContacto"
+                                name="nombre_contacto_proveedores">
                         </div>
                         <div class="col-md-6">
                             <label for="editarEmail" class="form-label">Email</label>
@@ -238,7 +308,8 @@ include('./db/conexion.php');
                         </div>
                         <div class="col-md-6">
                             <label for="editarCodigoPostal" class="form-label">Código Postal</label>
-                            <input type="text" class="form-control" id="editarCodigoPostal" name="codigo_postal_proveedores">
+                            <input type="text" class="form-control" id="editarCodigoPostal"
+                                name="codigo_postal_proveedores">
                         </div>
                         <div class="col-md-6">
                             <label for="editarSitioWeb" class="form-label">Sitio Web</label>
@@ -254,14 +325,17 @@ include('./db/conexion.php');
                         </div>
                         <div class="col-12">
                             <label for="editarHorario" class="form-label">Horario de Atención</label>
-                            <input type="text" class="form-control" id="editarHorario" name="horario_atencion_proveedores">
+                            <input type="text" class="form-control" id="editarHorario"
+                                name="horario_atencion_proveedores">
                         </div>
                         <div class="col-12">
                             <label for="editarObservaciones" class="form-label">Observaciones</label>
-                            <textarea class="form-control" id="editarObservaciones" name="observacion_proveedores" rows="3"></textarea>
+                            <textarea class="form-control" id="editarObservaciones" name="observacion_proveedores"
+                                rows="3"></textarea>
                         </div>
                     </div>
                 </div>
+                <div id="mensajeProveedor" class="alert d-none" role="alert"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-warning">Guardar cambios</button>
@@ -271,24 +345,21 @@ include('./db/conexion.php');
     </div>
 
     <!-- Modal Eliminar Proveedor -->
-    <div class="modal fade" id="modalEliminarProveedor" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEliminarProveedor" tabindex="-1" aria-labelledby="modalEliminarLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <form id="formEliminarProveedor" class="modal-content" method="POST" action="modulos/controllers/eliminar_proveedor.php">
+            <form id="formEliminarProveedor" class="modal-content" method="POST"
+                action="modulos/controllers/eliminar_proveedor.php">
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title" id="modalEliminarLabel">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
                     <!-- ASEGURAR QUE EL NAME SEA CORRECTO -->
                     <input type="hidden" name="id_proveedores" id="eliminarId" value="">
                     <p>¿Estás seguro que querés eliminar este proveedor?</p>
                     <p><strong><span id="eliminarNombreProveedor">-</span></strong></p>
-                    <div id="debugEliminar" class="alert alert-info mt-2">
-                        <small>
-                            Debug: ID = <span id="debugId"></span><br>
-                            Campo hidden value = <span id="debugHiddenValue"></span>
-                        </small>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -299,24 +370,29 @@ include('./db/conexion.php');
     </div>
 
     <!-- Modal Agregar Proveedor -->
-    <div class="modal fade" id="modalAgregarProveedor" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAgregarProveedor" tabindex="-1" aria-labelledby="modalAgregarLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <form id="formAgregarProveedor" class="modal-content" method="POST" action="modulos/controllers/agregar_proveedor.php">
+            <form id="formAgregarProveedor" class="modal-content" method="POST"
+                action="modulos/controllers/agregar_proveedor.php">
                 <div class="modal-header bg-success text-white">
                     <h5 class="modal-title" id="modalAgregarLabel">
                         <i class="bi bi-building-add me-2"></i>Agregar Proveedor
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="agregarNombre" class="form-label">Nombre *</label>
-                            <input type="text" class="form-control" id="agregarNombre" name="nombre_proveedores" required>
+                            <input type="text" class="form-control" id="agregarNombre" name="nombre_proveedores"
+                                required>
                         </div>
                         <div class="col-md-6">
                             <label for="agregarContacto" class="form-label">Contacto</label>
-                            <input type="text" class="form-control" id="agregarContacto" name="nombre_contacto_proveedores">
+                            <input type="text" class="form-control" id="agregarContacto"
+                                name="nombre_contacto_proveedores">
                         </div>
                         <div class="col-md-6">
                             <label for="agregarEmail" class="form-label">Email</label>
@@ -336,7 +412,8 @@ include('./db/conexion.php');
                         </div>
                         <div class="col-md-6">
                             <label for="agregarCodigoPostal" class="form-label">Código Postal</label>
-                            <input type="text" class="form-control" id="agregarCodigoPostal" name="codigo_postal_proveedores">
+                            <input type="text" class="form-control" id="agregarCodigoPostal"
+                                name="codigo_postal_proveedores">
                         </div>
                         <div class="col-md-6">
                             <label for="agregarSitioWeb" class="form-label">Sitio Web</label>
@@ -352,11 +429,13 @@ include('./db/conexion.php');
                         </div>
                         <div class="col-12">
                             <label for="agregarHorario" class="form-label">Horario de Atención</label>
-                            <input type="text" class="form-control" id="agregarHorario" name="horario_atencion_proveedores" placeholder="Ej: Lunes a Viernes 9:00 - 18:00">
+                            <input type="text" class="form-control" id="agregarHorario"
+                                name="horario_atencion_proveedores" placeholder="Ej: Lunes a Viernes 9:00 - 18:00">
                         </div>
                         <div class="col-12">
                             <label for="agregarObservaciones" class="form-label">Observaciones</label>
-                            <textarea class="form-control" id="agregarObservaciones" name="observacion_proveedores" rows="3"></textarea>
+                            <textarea class="form-control" id="agregarObservaciones" name="observacion_proveedores"
+                                rows="3"></textarea>
                         </div>
                     </div>
                     <div id="mensajeAgregarExito" class="alert alert-success mt-3 mb-0 d-none" role="alert">
@@ -373,8 +452,11 @@ include('./db/conexion.php');
         </div>
     </div>
 
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./modulos/js/proveedores.js"></script>
 </body>
-</html>
 
+</html>

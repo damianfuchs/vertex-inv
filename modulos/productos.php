@@ -3,12 +3,15 @@ include('./db/conexion.php');
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Productos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap" rel="stylesheet">
+
     <style>
         .table img {
             max-width: 50px;
@@ -17,24 +20,78 @@ include('./db/conexion.php');
             height: auto;
             object-fit: contain;
         }
+
         tr:hover {
             cursor: pointer;
             background-color: #f5f5f5;
         }
+
         .alert-flotante {
             animation: slideIn 0.3s ease-out;
         }
+
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .modern-title {
+            font-family: 'Nunito Sans', sans-serif;
+            font-weight: 600;
+            /* un poco más grueso para destacar */
+            font-size: 1.8rem;
+            color: #2c3e50;
+            /* un azul oscuro moderno */
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            /* espacio entre icono y texto */
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            /* espacio entre letras */
+            border-left: 4px solid #3498db;
+            /* barra lateral color azul */
+            padding-left: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .modern-title i {
+            font-size: 2rem;
+            color: #3498db;
+            /* azul del ícono */
+            transition: transform 0.3s ease;
+        }
+
+        /* Efecto hover para interactividad */
+        .modern-title:hover {
+            color: #2980b9;
+            cursor: pointer;
+        }
+
+        .modern-title:hover i {
+            transform: scale(1.1) rotate(10deg);
+            color: #2980b9;
         }
     </style>
 </head>
+
 <body>
-    <div class="container-fluid mt-0    ">
-        <h2>Gestión de Productos</h2>
-        
-        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">
+    <div class="container-fluid">
+        <h2 class="modern-title mb-4">
+            <i class="bi bi-box me-3"></i> Gestión de Productos
+        </h2>
+
+
+
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
+            data-bs-target="#modalAgregarProducto">
             <i class="bi bi-box-seam"></i> Agregar Producto
         </button>
 
@@ -65,69 +122,67 @@ include('./db/conexion.php');
                     ORDER BY p.id_prod DESC
                     ";
                     $resultado = $conexion->query($consulta);
-                    
+
                     if ($resultado && $resultado->num_rows > 0) {
                         while ($fila = $resultado->fetch_assoc()):
-                    ?>
-                        <tr data-producto-id="<?= $fila['id_prod'] ?>">
-                            <td><?= htmlspecialchars($fila['id_prod']) ?></td>
-                            <td><?= htmlspecialchars($fila['codigo_prod']) ?></td>
-                            <td><?= htmlspecialchars($fila['nombre_prod']) ?></td>
-                            <td><?= htmlspecialchars($fila['descripcion_prod']) ?></td>
-                            <td><?= htmlspecialchars($fila['nombre_categ'] ?? 'Sin categoría') ?></td>
-                            <td><?= htmlspecialchars($fila['materia_prod']) ?></td>
-                            <td><?= htmlspecialchars($fila['peso_prod']) ?> kg</td>
-                            <td><?= htmlspecialchars($fila['stock_prod']) ?></td>
-                            <td><?= htmlspecialchars($fila['ubicacion_prod']) ?></td>
-                            <td>
-                                <?php if (!empty($fila['imagen_prod'])): ?>
-                                    <img src="./img/<?= htmlspecialchars($fila['imagen_prod']) ?>" alt="Imagen"
-                                        style="max-width: 50px;">
-                                <?php else: ?>
-                                    Sin imagen
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-info btn-ver" data-bs-toggle="modal" data-bs-target="#modalVerProducto"
-                                    data-id="<?= $fila['id_prod'] ?>"
-                                    data-codigo="<?= htmlspecialchars($fila['codigo_prod']) ?>"
-                                    data-nombre="<?= htmlspecialchars($fila['nombre_prod']) ?>"
-                                    data-descripcion="<?= htmlspecialchars($fila['descripcion_prod']) ?>"
-                                    data-materia="<?= htmlspecialchars($fila['materia_prod']) ?>"
-                                    data-peso="<?= htmlspecialchars($fila['peso_prod']) ?>"
-                                    data-stock="<?= htmlspecialchars($fila['stock_prod']) ?>"
-                                    data-ubicacion="<?= htmlspecialchars($fila['ubicacion_prod']) ?>"
-                                    data-imagen="<?= htmlspecialchars($fila['imagen_prod']) ?>"
-                                    data-categoria="<?= htmlspecialchars($fila['nombre_categ'] ?? 'Sin categoría') ?>"
-                                    data-categoria-id="<?= $fila['categoria_id'] ?>">
-                                    <i class="bi bi-eye"></i>
-                                </button>
+                            ?>
+                            <tr data-producto-id="<?= $fila['id_prod'] ?>">
+                                <td><?= htmlspecialchars($fila['id_prod']) ?></td>
+                                <td><?= htmlspecialchars($fila['codigo_prod']) ?></td>
+                                <td><?= htmlspecialchars($fila['nombre_prod']) ?></td>
+                                <td><?= htmlspecialchars($fila['descripcion_prod']) ?></td>
+                                <td><?= htmlspecialchars($fila['nombre_categ'] ?? 'Sin categoría') ?></td>
+                                <td><?= htmlspecialchars($fila['materia_prod']) ?></td>
+                                <td><?= htmlspecialchars($fila['peso_prod']) ?> kg</td>
+                                <td><?= htmlspecialchars($fila['stock_prod']) ?></td>
+                                <td><?= htmlspecialchars($fila['ubicacion_prod']) ?></td>
+                                <td>
+                                    <?php if (!empty($fila['imagen_prod'])): ?>
+                                        <img src="./img/<?= htmlspecialchars($fila['imagen_prod']) ?>" alt="Imagen"
+                                            style="max-width: 50px;">
+                                    <?php else: ?>
+                                        Sin imagen
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info btn-ver" data-bs-toggle="modal"
+                                        data-bs-target="#modalVerProducto" data-id="<?= $fila['id_prod'] ?>"
+                                        data-codigo="<?= htmlspecialchars($fila['codigo_prod']) ?>"
+                                        data-nombre="<?= htmlspecialchars($fila['nombre_prod']) ?>"
+                                        data-descripcion="<?= htmlspecialchars($fila['descripcion_prod']) ?>"
+                                        data-materia="<?= htmlspecialchars($fila['materia_prod']) ?>"
+                                        data-peso="<?= htmlspecialchars($fila['peso_prod']) ?>"
+                                        data-stock="<?= htmlspecialchars($fila['stock_prod']) ?>"
+                                        data-ubicacion="<?= htmlspecialchars($fila['ubicacion_prod']) ?>"
+                                        data-imagen="<?= htmlspecialchars($fila['imagen_prod']) ?>"
+                                        data-categoria="<?= htmlspecialchars($fila['nombre_categ'] ?? 'Sin categoría') ?>"
+                                        data-categoria-id="<?= $fila['categoria_id'] ?>">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
 
-                                <button class="btn btn-sm btn-warning btn-editar" data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarProducto" 
-                                    data-id="<?= $fila['id_prod'] ?>"
-                                    data-codigo="<?= htmlspecialchars($fila['codigo_prod']) ?>"
-                                    data-nombre="<?= htmlspecialchars($fila['nombre_prod']) ?>"
-                                    data-descripcion="<?= htmlspecialchars($fila['descripcion_prod']) ?>"
-                                    data-materia="<?= htmlspecialchars($fila['materia_prod']) ?>"
-                                    data-peso="<?= htmlspecialchars($fila['peso_prod']) ?>"
-                                    data-stock="<?= htmlspecialchars($fila['stock_prod']) ?>"
-                                    data-ubicacion="<?= htmlspecialchars($fila['ubicacion_prod']) ?>"
-                                    data-imagen="<?= htmlspecialchars($fila['imagen_prod']) ?>"
-                                    data-categoria-id="<?= $fila['categoria_id'] ?>"
-                                    data-categoria="<?= htmlspecialchars($fila['nombre_categ'] ?? 'Sin categoría') ?>">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
+                                    <button class="btn btn-sm btn-warning btn-editar" data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarProducto" data-id="<?= $fila['id_prod'] ?>"
+                                        data-codigo="<?= htmlspecialchars($fila['codigo_prod']) ?>"
+                                        data-nombre="<?= htmlspecialchars($fila['nombre_prod']) ?>"
+                                        data-descripcion="<?= htmlspecialchars($fila['descripcion_prod']) ?>"
+                                        data-materia="<?= htmlspecialchars($fila['materia_prod']) ?>"
+                                        data-peso="<?= htmlspecialchars($fila['peso_prod']) ?>"
+                                        data-stock="<?= htmlspecialchars($fila['stock_prod']) ?>"
+                                        data-ubicacion="<?= htmlspecialchars($fila['ubicacion_prod']) ?>"
+                                        data-imagen="<?= htmlspecialchars($fila['imagen_prod']) ?>"
+                                        data-categoria-id="<?= $fila['categoria_id'] ?>"
+                                        data-categoria="<?= htmlspecialchars($fila['nombre_categ'] ?? 'Sin categoría') ?>">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
 
-                                <button class="btn btn-sm btn-danger btn-eliminar" data-bs-toggle="modal"
-                                    data-bs-target="#modalEliminarProducto" 
-                                    data-id="<?= $fila['id_prod'] ?>"
-                                    data-nombre="<?= htmlspecialchars($fila['nombre_prod']) ?>">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php 
+                                    <button class="btn btn-sm btn-danger btn-eliminar" data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminarProducto" data-id="<?= $fila['id_prod'] ?>"
+                                        data-nombre="<?= htmlspecialchars($fila['nombre_prod']) ?>">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php
                         endwhile;
                     } else {
                         echo "<tr><td colspan='11' class='text-center'>No hay productos registrados</td></tr>";
@@ -150,15 +205,18 @@ include('./db/conexion.php');
                 <div class="modal-body px-4 py-3">
                     <div class="mb-2"><strong>Código:</strong> <span id="verCodigo" class="text-muted">-</span></div>
                     <div class="mb-2"><strong>Nombre:</strong> <span id="verNombre" class="text-muted">-</span></div>
-                    <div class="mb-2"><strong>Descripción:</strong> <span id="verDescripcion" class="text-muted">-</span></div>
-                    <div class="mb-2"><strong>Categoría:</strong> <span id="verCategoria" class="text-muted">-</span></div>
+                    <div class="mb-2"><strong>Descripción:</strong> <span id="verDescripcion"
+                            class="text-muted">-</span></div>
+                    <div class="mb-2"><strong>Categoría:</strong> <span id="verCategoria" class="text-muted">-</span>
+                    </div>
                     <div class="mb-2"><strong>Material:</strong> <span id="verMateria" class="text-muted">-</span></div>
                     <div class="mb-2"><strong>Peso:</strong> <span id="verPeso" class="text-muted">-</span> kg</div>
                     <div class="mb-2"><strong>Stock:</strong> <span id="verStock" class="text-muted">-</span></div>
-                    <div class="mb-3"><strong>Ubicación:</strong> <span id="verUbicacion" class="text-muted">-</span></div>
+                    <div class="mb-3"><strong>Ubicación:</strong> <span id="verUbicacion" class="text-muted">-</span>
+                    </div>
                     <div class="text-center">
-                        <img id="verImagen" src="/placeholder.svg" alt="Imagen del producto" class="img-thumbnail rounded-3 mt-2"
-                            style="max-width: 200px; display: none;">
+                        <img id="verImagen" src="/placeholder.svg" alt="Imagen del producto"
+                            class="img-thumbnail rounded-3 mt-2" style="max-width: 200px; display: none;">
                         <div id="sinImagen" class="text-muted">Sin imagen</div>
                     </div>
                 </div>
@@ -180,7 +238,7 @@ include('./db/conexion.php');
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="id_prod" id="editarId">
-                    
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Código:</label>
@@ -192,7 +250,8 @@ include('./db/conexion.php');
                         </div>
                         <div class="col-12">
                             <label class="form-label">Descripción:</label>
-                            <textarea name="descripcion_prod" id="editarDescripcion" class="form-control" rows="2"></textarea>
+                            <textarea name="descripcion_prod" id="editarDescripcion" class="form-control"
+                                rows="2"></textarea>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Categoría:</label>
@@ -202,9 +261,10 @@ include('./db/conexion.php');
                                 $categorias = $conexion->query("SELECT id_categ, nombre_categ FROM categorias ORDER BY nombre_categ");
                                 if ($categorias) {
                                     while ($cat = $categorias->fetch_assoc()):
-                                ?>
-                                    <option value="<?= $cat['id_categ'] ?>"><?= htmlspecialchars($cat['nombre_categ']) ?></option>
-                                <?php 
+                                        ?>
+                                        <option value="<?= $cat['id_categ'] ?>"><?= htmlspecialchars($cat['nombre_categ']) ?>
+                                        </option>
+                                        <?php
                                     endwhile;
                                 }
                                 ?>
@@ -228,7 +288,8 @@ include('./db/conexion.php');
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Imagen:</label>
-                            <input type="file" name="imagen_prod" id="editarImagen" class="form-control" accept="image/*">
+                            <input type="file" name="imagen_prod" id="editarImagen" class="form-control"
+                                accept="image/*">
                             <small class="text-muted">Imagen actual: <span id="nombreImagenActual">-</span></small>
                         </div>
                     </div>
@@ -300,9 +361,10 @@ include('./db/conexion.php');
                                 $categorias = $conexion->query("SELECT id_categ, nombre_categ FROM categorias ORDER BY nombre_categ");
                                 if ($categorias) {
                                     while ($cat = $categorias->fetch_assoc()):
-                                ?>
-                                    <option value="<?= $cat['id_categ'] ?>"><?= htmlspecialchars($cat['nombre_categ']) ?></option>
-                                <?php 
+                                        ?>
+                                        <option value="<?= $cat['id_categ'] ?>"><?= htmlspecialchars($cat['nombre_categ']) ?>
+                                        </option>
+                                        <?php
                                     endwhile;
                                 }
                                 ?>
@@ -342,16 +404,17 @@ include('./db/conexion.php');
 
     <!-- Scripts al final del body para evitar problemas de timing -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Script de productos con timestamp para evitar caché -->
     <script>
         // Eliminar cualquier instancia anterior del ProductosManager
         if (window.productosManager) {
             delete window.productosManager;
         }
-        
+
         console.log("🔄 Cargando productos.js...");
     </script>
     <script src="./modulos/js/productos.js?v=<?= time() ?>" defer></script>
 </body>
+
 </html>

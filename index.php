@@ -24,18 +24,7 @@
                 <span class="name">VERTEX</span>
             </div>
         </div>
-        <div class="right">
-            <a href="#" class="icons-header">
-                <img src="iconos/chat.svg" alt="chat">
-            </a>
-            <a href="#" class="icons-header">
-                <img src="iconos/question.svg" alt="question">
-            </a>
-            <a href="#" class="icons-header">
-                <img src="iconos/notification.svg" alt="notification">
-            </a>
-            <img src="iconos/fotoperfil.jpg" alt="imagenUsuario" class="user">
-        </div>
+        
     </header>
     <div class="sidebar" id="sidebar">
         <nav>
@@ -55,7 +44,7 @@
                 <li>
                     <a href="#" data-page="productos">
                         <img src="iconos/grid.svg" alt="">
-                        <span>Productos</span>
+                        <span>Inventario</span>
                     </a>
                 </li>
                 <li>

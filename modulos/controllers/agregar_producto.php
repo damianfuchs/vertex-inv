@@ -31,12 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("issssdiis", $categoria_id, $codigo_prod, $nombre_prod, $descripcion_prod, $materia_prod, $peso_prod, $stock_prod, $ubicacion_prod, $imagen_prod);
     $stmt->execute();
 
+    header('Content-Type: application/json');
+
     if ($stmt->affected_rows > 0) {
-        header('Location: ../../index.php');    
-        exit;
+        echo json_encode([
+            'success' => true,
+            'message' => 'Producto agregado correctamente'
+        ]);
     } else {
-        echo "Error al agregar producto.";
+        echo json_encode([
+            'success' => false,
+            'message' => 'No se pudo agregar el producto'
+        ]);
     }
+    exit;
+
     $stmt->close();
     $conexion->close();
 }

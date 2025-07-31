@@ -119,11 +119,7 @@ if (!esCategorias()) {
         const submitBtn = form.querySelector('button[type="submit"]')
         const originalBtnText = submitBtn.innerHTML
 
-        console.log(`📤 Enviando formulario ${tipo} a:`, form.action)
-        console.log("📋 Datos:", Object.fromEntries(formData.entries()))
-
         try {
-          // Deshabilitar botón y mostrar loading
           submitBtn.disabled = true
           submitBtn.innerHTML = `
             <span class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -140,14 +136,13 @@ if (!esCategorias()) {
           }
 
           const responseText = await response.text()
-          console.log(`📄 Respuesta del servidor:`, responseText)
 
           let result
           try {
             result = JSON.parse(responseText)
-            console.log(`✅ JSON parseado:`, result)
 
             if (result.success) {
+              // Aquí llamamos a mostrarMensaje para mostrar el cartel
               this.mostrarMensaje(result.message, "success")
               this.cerrarModal(form)
 
@@ -155,21 +150,17 @@ if (!esCategorias()) {
                 form.reset()
               }
 
-              // Recargar página después de mostrar el mensaje
               setTimeout(() => {
                 window.location.reload()
               }, 1500)
             } else {
               throw new Error(result.message || "Error desconocido")
             }
-          } catch (parseError) {
-            console.error("❌ Error al parsear JSON:", parseError)
-            console.log("📄 Respuesta no es JSON válido, asumiendo éxito...")
-
-            // Si no es JSON válido, mostrar mensaje genérico y recargar
+          } catch {
+            // Si no es JSON válido igual mostrar mensaje genérico
             this.mostrarMensaje(
               `Categoría ${tipo === "agregar" ? "agregada" : tipo === "editar" ? "editada" : "eliminada"} correctamente`,
-              "success",
+              "success"
             )
             this.cerrarModal(form)
 
@@ -182,14 +173,15 @@ if (!esCategorias()) {
             }, 1500)
           }
         } catch (error) {
-          console.error(`❌ Error en ${tipo}:`, error)
           this.mostrarMensaje(`Error al ${tipo} la categoría: ${error.message}`, "danger")
         } finally {
-          // Restaurar botón
           submitBtn.disabled = false
           submitBtn.innerHTML = originalBtnText
         }
       }
+
+
+
 
       cerrarModal(form) {
         const modal = window.bootstrap.Modal.getInstance(form.closest(".modal"))

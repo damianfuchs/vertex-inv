@@ -1,21 +1,21 @@
 // Solo ejecutar si estamos en la página de proveedores
-(function() {
+(function () {
     'use strict'
-    
+
     console.log("🚀 Módulo proveedores.js cargado")
-    
+
     // Verificar que estamos en la página correcta
     function esProveedores() {
         return document.querySelector("#modalVerProveedor") !== null
     }
-    
+
     if (!esProveedores()) {
         console.log("⚠️ No estamos en la página de proveedores")
         return
     }
-    
+
     console.log("✅ Página de proveedores detectada, inicializando...")
-    
+
     // Función para copiar texto
     function copiarTexto(elementId, button) {
         const elemento = document.getElementById(elementId)
@@ -140,7 +140,6 @@
 
         // === PROVEEDOR: ELIMINAR ===
         if (button.classList.contains("btn-eliminar") && button.getAttribute("data-bs-target") === "#modalEliminarProveedor") {
-            console.log("🗑️ === MODAL ELIMINAR PROVEEDOR ===")
 
             const id = button.getAttribute("data-id")
             const nombre = button.getAttribute("data-nombre")
@@ -160,35 +159,50 @@
     }
 
     // Función para enviar formularios
-    function enviarFormulario(event, tipo) {
-        event.preventDefault()
-        console.log(`📝 Enviando formulario de ${tipo}...`)
+    function mostrarMensaje(texto, tipo = "success") {
+        const contenedor = document.getElementById("mensajeProveedor");
+        if (!contenedor) return;
 
-        const formData = new FormData(event.target)
+        contenedor.textContent = texto;
+        contenedor.className = `mensaje-flotante alert-${tipo}`;
+        contenedor.classList.remove("d-none");
+
+        setTimeout(() => {
+            contenedor.classList.add("d-none");
+        }, 3000);
+    }
+
+
+
+    function enviarFormulario(event, tipo) {
+        event.preventDefault();
+        console.log(`📝 Enviando formulario de ${tipo}...`);
+
+        const formData = new FormData(event.target);
 
         fetch(event.target.action, {
             method: "POST",
             body: formData,
         })
-        .then(response => response.text())
-        .then(data => {
-            try {
-                const jsonResponse = JSON.parse(data)
-                if (jsonResponse.success) {
-                    alert("✅ " + jsonResponse.message)
-                    location.reload()
-                } else {
-                    alert("❌ Error: " + jsonResponse.message)
+            .then(response => response.text())
+            .then(data => {
+                try {
+                    const jsonResponse = JSON.parse(data);
+                    if (jsonResponse.success) {
+                        mostrarMensaje("✅ " + jsonResponse.message, "success");
+                        setTimeout(() => location.reload(), 1500); // Recarga la página luego de mostrar mensaje
+                    } else {
+                        mostrarMensaje("❌ Error: " + jsonResponse.message, "danger");
+                    }
+                } catch (e) {
+                    mostrarMensaje(`✅ ${tipo} realizado con éxito`, "success");
+                    setTimeout(() => location.reload(), 1500);
                 }
-            } catch (e) {
-                alert(`✅ ${tipo} realizado con éxito`)
-                location.reload()
-            }
-        })
-        .catch(error => {
-            console.error("❌ Error:", error)
-            alert(`Error al ${tipo.toLowerCase()} el proveedor`)
-        })
+            })
+            .catch(error => {
+                console.error("❌ Error:", error);
+                mostrarMensaje(`Error al ${tipo.toLowerCase()} el proveedor`, "danger");
+            });
     }
 
     // Configurar event listeners
@@ -227,9 +241,9 @@
 
     // Inicializar inmediatamente
     configurarEventListeners()
-    
+
     // Hacer funciones globales
     window.copiarTexto = copiarTexto
-    
+
     console.log("🎉 Módulo proveedores configurado correctamente")
 })()

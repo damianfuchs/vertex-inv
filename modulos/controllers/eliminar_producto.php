@@ -57,7 +57,7 @@ try {
 
     // Si se eliminó correctamente, eliminar también la imagen del servidor
     if ($imagen_prod && !empty(trim($imagen_prod))) {
-        $directorio_img = dirname(__DIR__) . '/img/';
+        $directorio_img = dirname(__DIR__) . '../../img/';
         $ruta_imagen = $directorio_img . $imagen_prod;
         
         if (file_exists($ruta_imagen)) {

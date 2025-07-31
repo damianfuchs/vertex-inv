@@ -3,6 +3,7 @@ include('./db/conexion.php');
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,16 +17,58 @@ include('./db/conexion.php');
         .alert-flotante {
             animation: slideIn 0.3s ease-out;
         }
+
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .modern-title {
+            font-family: 'Nunito Sans', sans-serif;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .modern-title i {
+            font-size: 1.8rem;
+            color: #3498db;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Hover */
+        .modern-title:hover {
+            color: #2980b9;
+        }
+
+        .modern-title:hover i {
+            color: #2980b9;
+            transform: scale(1.1) rotate(10deg);
         }
     </style>
 </head>
+
 <body>
     <div class="container-fluid ">
-        <h2>Gestión de Categorías</h2>
-        
+        <h2 class="modern-title mb-4">
+            <i class="bi bi-tags"></i> Gestión de Categorías
+        </h2>
+
+
+
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregarCategoria"
             style="margin-bottom: 28px;">
             <i class="bi bi-tag"></i> Agregar Categoría
@@ -94,7 +137,8 @@ include('./db/conexion.php');
                             aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="formAgregarCategoria" method="POST" action="modulos/controllers/agregar_categoria.php">
+                        <form id="formAgregarCategoria" method="POST"
+                            action="modulos/controllers/agregar_categoria.php">
                             <div class="mb-3">
                                 <label for="codigo_categ" class="form-label fw-semibold">Código:</label>
                                 <input type="text" class="form-control rounded-3" name="codigo_categ" required />
@@ -173,7 +217,8 @@ include('./db/conexion.php');
                         <h5 class="modal-title">
                             <i class="bi bi-trash3-fill me-2"></i> Eliminar Categoría
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body text-center py-4">
                         <p class="mb-0">¿Estás seguro de que querés eliminar esta categoría?</p>
@@ -194,5 +239,9 @@ include('./db/conexion.php');
         console.log("🔄 Cargando categorias.js...");
     </script>
     <script src="./modulos/js/categorias.js?v=<?= time() ?>" defer></script>
+
+    <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080"></div>
+
 </body>
+
 </html>

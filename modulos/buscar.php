@@ -36,3 +36,7 @@
         </div>
     </div>
 </div>
+
+
+<div id="resultadosBusqueda" class="mt-4"></div>
+<script src="./modulos/js/buscar.js?v=<?= time() ?>" defer></script>

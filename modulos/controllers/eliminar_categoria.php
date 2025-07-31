@@ -1,5 +1,5 @@
 <?php
-// Incluir la conexión a la base de datos
+header('Content-Type: application/json');
 include('../db/conexion.php');
 
 // Verificar que la petición sea POST
@@ -96,4 +96,4 @@ try {
         $conexion->close();
     }
 }
-?>
+
