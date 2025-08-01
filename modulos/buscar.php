@@ -14,11 +14,23 @@
             <div class="card">
                 <div class="card-body">
                     <div class="input-group mb-3">
+                        <label class="input-group-text" for="selectModulo">
+                            <i class="bi bi-funnel"></i>
+                        </label>
+                        <select class="form-select" id="selectModulo">
+                            <option value="productos" selected>Productos</option>
+                            <option value="categorias">Categorías</option>
+                            <option value="proveedores">Proveedores</option>
+                            <option value="clientes">Clientes</option>
+                            <option value="ventas">Ventas</option>
+                            <option value="pedidos">Pedidos</option>
+                        </select>
+                        
                         <span class="input-group-text">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" class="form-control" placeholder="Buscar productos, clientes, proveedores...">
-                        <button class="btn btn-primary" type="button">Buscar</button>
+                        <input type="text" id="inputBusqueda" class="form-control" placeholder="Buscar productos, clientes, proveedores...">
+                        <button class="btn btn-primary" type="button" id="btnBuscar">Buscar</button>
                     </div>
                 </div>
             </div>
@@ -37,6 +49,6 @@
     </div>
 </div>
 
-
 <div id="resultadosBusqueda" class="mt-4"></div>
+
 <script src="./modulos/js/buscar.js?v=<?= time() ?>" defer></script>
