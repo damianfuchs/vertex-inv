@@ -23,7 +23,7 @@ include('./db/conexion.php');
         }
 
         .modern-title {
-             font-family: 'Nunito Sans', sans-serif;
+            font-family: 'Nunito Sans', sans-serif;
             font-weight: 600;
             /* un poco más grueso para destacar */
             font-size: 1.6rem;
@@ -108,6 +108,7 @@ include('./db/conexion.php');
                         <th>Precio</th>
                         <th>Estado</th>
                         <th>Observaciones</th>
+                        <th><i class="bi bi-clipboard-check"></i> Marcar</th> <!-- NUEVA COLUMNA PARA BOTÓN -->
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -134,6 +135,19 @@ include('./db/conexion.php');
                                 <?php endif; ?>
                             </td>
                             <td><?= htmlspecialchars($fila['observaciones_pedidos']) ?></td>
+
+                            <!-- NUEVA COLUMNA CON BOTÓN "LISTO" -->
+                            <td>
+                                <?php if ($fila['estado_pedido'] === 'Pendiente'): ?>
+                                    <button class="btn btn-sm btn-success btn-marcar-entregado"
+                                        data-id="<?= $fila['id_pedido'] ?>">
+                                        <i class="bi bi-check-circle"></i> Listo
+                                    </button>
+                                <?php else: ?>
+                                    <span class="text-muted">✓</span>
+                                <?php endif; ?>
+                            </td>
+
                             <td>
                                 <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalVerPedido"
                                     data-id="<?= $fila['id_pedido'] ?>"
@@ -163,9 +177,9 @@ include('./db/conexion.php');
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
-
             </table>
         </div>
+
 
         <!-- Modal Ver Pedido -->
         <div class="modal fade" id="modalVerPedido" tabindex="-1" aria-labelledby="modalVerPedidoLabel"
@@ -292,14 +306,14 @@ include('./db/conexion.php');
                                 <label for="agregarEstadoPedido" class="form-label">Estado *</label>
                                 <select class="form-select" id="agregarEstadoPedido" name="estado_pedido" required>
                                     <option value="">Seleccione estado</option>
-                                    <option value="Pendiente">Pendiente</option>
+                                     <option value="Pendiente" selected>Pendiente</option>
                                     <option value="Entregado">Entregado</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="agregarFechaPedido" class="form-label">Fecha *</label>
-                                <input type="datetime-local" class="form-control" id="agregarFechaPedido"
-                                    name="fecha_pedido" required />
+                                <input type="date" class="form-control" id="agregarFechaPedido" name="fecha_pedido" required />
+
                             </div>
                             <div class="col-12">
                                 <label for="agregarObservacionesPedido" class="form-label">Observaciones</label>

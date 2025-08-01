@@ -86,7 +86,7 @@
     // === PEDIDO: ELIMINAR ===
     if (button.classList.contains("btn-danger") && button.getAttribute("data-bs-target") === "#modalEliminarPedido") {
       const id = button.getAttribute("data-id")
-      const eliminarIdInput = document.getElementById("eliminarId")
+      const eliminarIdInput = document.getElementById("eliminarIdPedido")
       if (eliminarIdInput) {
         eliminarIdInput.value = id || ""
       }
@@ -179,4 +179,73 @@
   configurarEventListeners()
 
   console.log("🎉 Módulo pedidos configurado correctamente")
+
+  
+
+
+
+
 })()
+
+
+
+document.addEventListener('click', function(event) {
+  const btn = event.target.closest('.btn-marcar-entregado');
+  if (!btn) return;
+
+  const idPedido = btn.getAttribute('data-id');
+  if (!idPedido) return;
+
+  // Deshabilitar botón para evitar múltiples clicks
+  btn.disabled = true;
+
+  fetch('./modulos/controllers/marcar_entregado.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: `id_pedido=${encodeURIComponent(idPedido)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      // Cambiar el estado en la fila
+      const fila = btn.closest('tr');
+
+      // Cambiar badge Estado
+      const tdEstado = fila.querySelector('td:nth-child(4)');
+      if (tdEstado) {
+        tdEstado.innerHTML = `<span class="badge bg-success">Entregado</span>`;
+      }
+
+      // Cambiar contenido de la columna "Marcar"
+      const tdMarcar = btn.parentElement;
+      if (tdMarcar) {
+        tdMarcar.innerHTML = `<span class="text-muted">✓</span>`;
+      }
+
+      mostrarMensaje('Pedido marcado como Entregado', 'success');
+    } else {
+      alert('Error: ' + (data.error || 'No se pudo actualizar el estado'));
+      btn.disabled = false;
+    }
+  })
+  .catch(err => {
+    alert('Error de conexión o en el servidor');
+    btn.disabled = false;
+  });
+});
+
+// Función para mostrar mensaje flotante (puedes usar la misma que tienes)
+function mostrarMensaje(texto, tipo = "success") {
+  const contenedor = document.getElementById("mensajePedido");
+  if (!contenedor) return;
+
+  contenedor.textContent = texto;
+  contenedor.className = `mensaje-flotante alert-${tipo}`;
+  contenedor.classList.remove("d-none");
+
+  setTimeout(() => {
+    contenedor.classList.add("d-none");
+  }, 3000);
+}
+
+

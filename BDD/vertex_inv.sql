@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-08-2025 a las 03:15:24
+-- Tiempo de generación: 01-08-2025 a las 08:27:43
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -70,10 +70,9 @@ INSERT INTO `clientes` (`id_clientes`, `nombre_clientes`, `dni_cuit_clientes`, `
 (2, 'María L', '87654321', 'maria.lopez@mail.com', '0111111', 'Avenida Siempre Viva 742', 'Ciudad B', 'Minorista', 'Compra al por mayor'),
 (3, 'Carlos Gómez', '11223344', 'carlos.gomez@mail.com', '1122334455', 'Boulevard Central 45', 'DDDD', 'Otro', 'Comprador 1'),
 (4, 'Ana Martínez', '44332211', 'ana.martinez@mail.com', '5544332211', 'Calle Nueva 89', 'Ciudad A', 'Minorista', 'Primer compra'),
-(6, 'Damian Emmanuel', '4199999', 'damian@hotmail.com', '34343432', 'sdasdas', 'dsada', 'Minorista', 'dasdasas'),
+(6, 'Damian Emmanuel', '4199999', 'damian@hotmail.com', '3435515310', 'sdasdas', 'dsada', 'Minorista', 'dasdasas'),
 (8, 'Damian', 'dda', 'dsadsada@2131', 'dadad', 'asdasdada', 'd', 'Minorista', '1111'),
-(9, 'ds', 'dasd', 'asdas@ds', 'dasd', 'adsad', 'das', 'Mayorista', 'dsa'),
-(18, 'DAMIAN EMMAEl', '', '', '3435515310', '', '', 'Minorista', '');
+(9, 'ds', 'dasd', 'asdas@ds', 'dasd', 'adsad', 'das', 'Mayorista', 'dsa');
 
 -- --------------------------------------------------------
 
@@ -84,7 +83,7 @@ INSERT INTO `clientes` (`id_clientes`, `nombre_clientes`, `dni_cuit_clientes`, `
 CREATE TABLE `pedidos` (
   `id_pedido` int(11) NOT NULL,
   `nombre_cliente_pedido` varchar(100) NOT NULL,
-  `fecha_pedido` datetime DEFAULT current_timestamp(),
+  `fecha_pedido` date DEFAULT NULL,
   `precio_pedido` decimal(10,2) DEFAULT NULL,
   `estado_pedido` enum('Pendiente','Entregado') DEFAULT 'Pendiente',
   `observaciones_pedidos` text DEFAULT NULL
@@ -95,11 +94,11 @@ CREATE TABLE `pedidos` (
 --
 
 INSERT INTO `pedidos` (`id_pedido`, `nombre_cliente_pedido`, `fecha_pedido`, `precio_pedido`, `estado_pedido`, `observaciones_pedidos`) VALUES
-(1, 'Juan Pérez', '2025-07-25 14:30:00', 1500.00, 'Pendiente', 'Entrega urgente'),
-(2, 'María Gómez', '2025-07-26 09:15:00', 2300.50, 'Entregado', 'Cliente frecuente'),
-(3, 'Carlos Díaz', '2025-07-27 11:45:00', 1200.75, 'Pendiente', ''),
-(5, 'Andrés Morales', '2025-07-29 10:30:00', 1750.00, 'Pendiente', 'Revisar stock antes de enviar'),
-(6, 'Damian Fuchs', '2025-07-31 19:20:20', 2000.00, 'Entregado', 'dasdasdsa');
+(2, 'María Gómez', '2025-07-26', 2300.50, 'Entregado', 'Cliente frecuente'),
+(3, 'Carlos Díaz', '2025-07-27', 1200.75, 'Pendiente', ''),
+(6, 'Damian Fuchs', '2025-07-31', 2000.00, 'Entregado', 'dasdasdsa'),
+(7, 'Emmanuel Fuchs', '2025-08-01', 200000.00, 'Entregado', 'Trabajos'),
+(8, 'Damian Emmanuel', '2025-08-01', 100000.00, 'Pendiente', 'Trabajos en casa');
 
 -- --------------------------------------------------------
 
@@ -223,7 +222,7 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_pedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
