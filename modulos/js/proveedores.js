@@ -93,6 +93,19 @@
             asignar("verHorario", datos.horario)
             asignar("verObservaciones", datos.observaciones)
             asignar("verEstado", datos.estado == "1" ? "Activo" : "No Activo")
+
+            // Agregar link WhatsApp dinámico
+            const telefono = datos.telefono || "";
+            const btnWhatsapp = document.getElementById("btnWhatsapp");
+
+            if (telefono.trim() !== "") {
+                const numeroLimpio = telefono.replace(/\D/g, "");
+                btnWhatsapp.href = `https://wa.me/${numeroLimpio}`;
+                btnWhatsapp.style.display = "inline-block";
+            } else {
+                btnWhatsapp.style.display = "none";
+            }
+
             return
         }
 
@@ -131,7 +144,7 @@
             asignarCampo("editarDireccion", datos.direccion)
             asignarCampo("editarUbicacion", datos.ubicacion)
             asignarCampo("editarCodigoPostal", datos.codigoPostal)
-            asignarCampo("editarSitioWeb", datos.sitioWeb)
+            asignarCampo("editarSitioWeb", datos.sitioweb)
             asignarCampo("editarHorario", datos.horario)
             asignarCampo("editarObservaciones", datos.observaciones)
             asignarCampo("editarEstado", datos.estado || "1")
@@ -157,6 +170,7 @@
             return
         }
     }
+
 
     // Función para enviar formularios
     function mostrarMensaje(texto, tipo = "success") {

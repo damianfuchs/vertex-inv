@@ -46,7 +46,7 @@ include('./db/conexion.php');
             font-family: 'Nunito Sans', sans-serif;
             font-weight: 600;
             /* un poco más grueso para destacar */
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: #2c3e50;
             /* un azul oscuro moderno */
             display: flex;
@@ -63,21 +63,27 @@ include('./db/conexion.php');
         }
 
         .modern-title i {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #3498db;
-            /* azul del ícono */
-            transition: transform 0.3s ease;
+            transition: color 0.3s ease, transform 0.3s ease;
         }
 
-        /* Efecto hover para interactividad */
+        /* Hover */
         .modern-title:hover {
             color: #2980b9;
-            cursor: pointer;
         }
 
         .modern-title:hover i {
-            transform: scale(1.1) rotate(10deg);
             color: #2980b9;
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        tr.fila-stock-cero td {
+            background-color: rgba(185, 103, 109, 1) !important;
+            /* fondo rojo claro */
+            color: #fffefeff !important;
+            /* texto rojo oscuro */
+            
         }
     </style>
 </head>
@@ -85,21 +91,22 @@ include('./db/conexion.php');
 <body>
     <div class="container-fluid">
         <h2 class="modern-title mb-4">
-            <i class="bi bi-box me-3"></i> Gestión de Productos
+            <i class="bi bi-box"></i>Gestión de Productos
         </h2>
 
 
 
-        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-            data-bs-target="#modalAgregarProducto">
+        <button type="button" class="btn mb-3" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto"
+            style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%); border: none; color: white;">
             <i class="bi bi-box-seam"></i> Agregar Producto
         </button>
+
+
 
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead class="table-dark">
                     <tr>
-                        <th>ID</th>
                         <th>Código</th>
                         <th>Nombre</th>
                         <th>Descripción</th>
@@ -126,8 +133,8 @@ include('./db/conexion.php');
                     if ($resultado && $resultado->num_rows > 0) {
                         while ($fila = $resultado->fetch_assoc()):
                             ?>
-                            <tr data-producto-id="<?= $fila['id_prod'] ?>">
-                                <td><?= htmlspecialchars($fila['id_prod']) ?></td>
+                            <tr data-producto-id="<?= $fila['id_prod'] ?>"
+                                class="<?= ($fila['stock_prod'] === '0' || $fila['stock_prod'] === 0) ? 'fila-stock-cero' : '' ?>">
                                 <td><?= htmlspecialchars($fila['codigo_prod']) ?></td>
                                 <td><?= htmlspecialchars($fila['nombre_prod']) ?></td>
                                 <td><?= htmlspecialchars($fila['descripcion_prod']) ?></td>

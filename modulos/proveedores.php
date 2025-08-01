@@ -67,16 +67,23 @@ include('./db/conexion.php');
         }
 
         .modern-title {
-            font-family: 'Nunito Sans', sans-serif;
-            font-weight: 300;
+             font-family: 'Nunito Sans', sans-serif;
+            font-weight: 600;
+            /* un poco más grueso para destacar */
+            font-size: 1.6rem;
+            color: #2c3e50;
+            /* un azul oscuro moderno */
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #2c3e50;
+            gap: 0.75rem;
+            /* espacio entre icono y texto */
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            /* espacio entre letras */
             border-left: 4px solid #3498db;
-            padding-left: 10px;
+            /* barra lateral color azul */
+            padding-left: 12px;
             transition: color 0.3s ease;
-            cursor: pointer;
         }
 
         .modern-title i {
@@ -106,8 +113,8 @@ include('./db/conexion.php');
 
 
         <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-            data-bs-target="#modalAgregarProveedor">
-            <i class="bi bi-building-add"></i> Agregar Proveedor
+            data-bs-target="#modalAgregarProveedor" style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%); border: none; color: white;">
+            <i class="bi bi-truck"></i> Agregar Proveedor
         </button>
 
 
@@ -230,12 +237,13 @@ include('./db/conexion.php');
                         <div class="col-md-6">
                             <p>
                                 <strong>Teléfono:</strong>
-                                <span id="verTelefono">-</span>
-                                <button type="button" class="btn btn-sm btn-outline-success ms-2"
-                                    onclick="copiarTexto('verTelefono', this)" title="Copiar teléfono">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
+                                <span id="verTelefono"></span>
+                                <a id="btnWhatsapp" class="btn btn-sm btn-success ms-2" target="_blank"
+                                    style="display:none;">
+                                    <i class="bi bi-whatsapp"></i> 
+                                </a>
                             </p>
+
                         </div>
                         <div class="col-12">
                             <p><strong>Dirección:</strong> <span id="verDireccion">-</span></p>
@@ -456,7 +464,7 @@ include('./db/conexion.php');
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./modulos/js/proveedores.js"></script>
+
 </body>
 
 </html>

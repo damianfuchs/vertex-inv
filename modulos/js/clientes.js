@@ -1,204 +1,249 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const bootstrap = window.bootstrap // Declare the bootstrap variable
+// Solo ejecutar si estamos en la página de clientes
+(function () {
+  'use strict'
 
-  document.addEventListener("click", (e) => {
-    // VER CLIENTE
-    const btnVer = e.target.closest('[data-bs-target="#modalVerCliente"]')
-    if (btnVer) {
-      document.getElementById("verNombre").textContent = btnVer.dataset.nombre || ""
-      document.getElementById("verDni").textContent = btnVer.dataset.dni || ""
-      document.getElementById("verEmail").textContent = btnVer.dataset.email || ""
-      document.getElementById("verTelefono").textContent = btnVer.dataset.telefono || ""
-      document.getElementById("verDireccion").textContent = btnVer.dataset.direccion || ""
-      document.getElementById("verLocalidad").textContent = btnVer.dataset.localidad || ""
-      document.getElementById("verTipo").textContent = btnVer.dataset.tipo || ""
-      document.getElementById("verObservaciones").textContent = btnVer.dataset.observaciones || ""
-    }
+  console.log("🚀 Módulo clientes.js cargado")
 
-    // EDITAR CLIENTE
-    const btnEditar = e.target.closest('[data-bs-target="#modalEditarCliente"]')
-    if (btnEditar) {
-      document.getElementById("editarId").value = btnEditar.dataset.id || ""
-      document.getElementById("editarNombre").value = btnEditar.dataset.nombre || ""
-      document.getElementById("editarDni").value = btnEditar.dataset.dni || ""
-      document.getElementById("editarEmail").value = btnEditar.dataset.email || ""
-      document.getElementById("editarTelefono").value = btnEditar.dataset.telefono || ""
-      document.getElementById("editarDireccion").value = btnEditar.dataset.direccion || ""
-      document.getElementById("editarLocalidad").value = btnEditar.dataset.localidad || ""
-      document.getElementById("editarTipo").value = btnEditar.dataset.tipo || ""
-      document.getElementById("editarObservaciones").value = btnEditar.dataset.observaciones || ""
-    }
+  // Verificar que estamos en la página correcta
+  function esClientes() {
+    return document.querySelector("#modalVerCliente") !== null
+  }
 
-    // ELIMINAR CLIENTE
-    const btnEliminar = e.target.closest('[data-bs-target="#modalEliminarCliente"]')
-    if (btnEliminar) {
-      document.getElementById("eliminarId").value = btnEliminar.dataset.id || ""
-    }
-  })
-})
-
-// Función para copiar texto al portapapeles
-function copiarTexto(elementoId, boton) {
-  const elemento = document.getElementById(elementoId)
-  const texto = elemento.textContent.trim()
-
-  if (!texto) {
-    mostrarMensaje(boton, "No hay texto para copiar", "warning")
+  if (!esClientes()) {
+    console.log("⚠️ No estamos en la página de clientes")
     return
   }
 
-  // Usar la API moderna del portapapeles
-  if (navigator.clipboard && window.isSecureContext) {
+  console.log("✅ Página de clientes detectada, inicializando...")
+
+  // Función para copiar texto
+  function copiarTexto(elementId, button) {
+    const elemento = document.getElementById(elementId)
+    const texto = elemento.textContent.trim()
+
+    if (!texto || texto === "-") {
+      alert("No hay texto para copiar")
+      return
+    }
+
     navigator.clipboard
       .writeText(texto)
       .then(() => {
-        mostrarMensaje(boton, "¡Copiado!", "success")
+        const originalText = button.innerHTML
+        button.innerHTML = '<i class="bi bi-check"></i> Copiado'
+        button.classList.remove("btn-outline-primary", "btn-outline-success")
+        button.classList.add("btn-success")
+
+        setTimeout(() => {
+          button.innerHTML = originalText
+          button.classList.remove("btn-success")
+          if (elementId === "verEmail") {
+            button.classList.add("btn-outline-primary")
+          } else {
+            button.classList.add("btn-outline-success")
+          }
+        }, 2000)
       })
       .catch((err) => {
         console.error("Error al copiar: ", err)
-        copiarTextoFallback(texto, boton)
+        alert("Error al copiar el texto")
       })
-  } else {
-    // Fallback para navegadores más antiguos
-    copiarTextoFallback(texto, boton)
-  }
-}
-
-// Función fallback para copiar texto (navegadores más antiguos)
-function copiarTextoFallback(texto, boton) {
-  const textArea = document.createElement("textarea")
-  textArea.value = texto
-  textArea.style.position = "fixed"
-  textArea.style.left = "-999999px"
-  textArea.style.top = "-999999px"
-  document.body.appendChild(textArea)
-  textArea.focus()
-  textArea.select()
-
-  try {
-    document.execCommand("copy")
-    mostrarMensaje(boton, "¡Copiado!", "success")
-  } catch (err) {
-    console.error("Error al copiar: ", err)
-    mostrarMensaje(boton, "Error al copiar", "danger")
   }
 
-  document.body.removeChild(textArea)
-}
+  // Función para manejar clicks específicos de clientes
+  function manejarClickClientes(event) {
+    const button = event.target.closest("button")
+    if (!button) return
 
-// Función para mostrar mensaje temporal en el botón
-function mostrarMensaje(boton, mensaje, tipo) {
-  const textoOriginal = boton.innerHTML
-  const iconoOriginal = boton.querySelector("i").className
+    // === CLIENTE: VER ===
+    if (button.classList.contains("btn-info") && button.getAttribute("data-bs-target") === "#modalVerCliente") {
+      console.log("👁️ === MODAL VER CLIENTE ===")
 
-  // Cambiar el contenido del botón temporalmente
-  if (tipo === "success") {
-    boton.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + mensaje
-    boton.className = boton.className.replace(/btn-outline-\w+/, "btn-success")
-  } else if (tipo === "warning") {
-    boton.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> ' + mensaje
-    boton.className = boton.className.replace(/btn-outline-\w+/, "btn-warning")
-  } else if (tipo === "danger") {
-    boton.innerHTML = '<i class="bi bi-x-circle-fill"></i> ' + mensaje
-    boton.className = boton.className.replace(/btn-outline-\w+/, "btn-danger")
-  }
-
-  // Restaurar el botón después de 2 segundos
-  setTimeout(() => {
-    boton.innerHTML = textoOriginal
-    if (tipo === "success") {
-      boton.className = boton.className.replace("btn-success", "btn-outline-primary")
-    } else if (tipo === "warning") {
-      boton.className = boton.className.replace("btn-warning", "btn-outline-primary")
-    } else if (tipo === "danger") {
-      boton.className = boton.className.replace("btn-danger", "btn-outline-primary")
-    }
-  }, 2000)
-}
-
-// Función para manejar el envío del formulario de agregar
-function enviarAgregarCliente(event) {
-  event.preventDefault()
-
-  const form = event.target
-  const formData = new FormData(form)
-
-  fetch(form.action, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.text())
-    .then((data) => {
-      // Mostrar mensaje de éxito
-      const mensajeExito = document.getElementById("mensajeAgregarExito")
-      if (mensajeExito) {
-        mensajeExito.classList.remove("d-none")
-        setTimeout(() => {
-          mensajeExito.classList.add("d-none")
-          // Cerrar modal y recargar página
-          const modal = window.bootstrap.Modal.getInstance(document.getElementById("modalAgregarCliente"))
-          modal.hide()
-          form.reset()
-          location.reload()
-        }, 2000)
+      const datos = {
+        id: button.getAttribute("data-id"),
+        nombre: button.getAttribute("data-nombre"),
+        dni: button.getAttribute("data-dni"),
+        email: button.getAttribute("data-email"),
+        telefono: button.getAttribute("data-telefono"),
+        direccion: button.getAttribute("data-direccion"),
+        localidad: button.getAttribute("data-localidad"),
+        tipo: button.getAttribute("data-tipo"),
+        observaciones: button.getAttribute("data-observaciones"),
       }
+
+      // Asignar valores
+      const asignar = (id, valor) => {
+        const elemento = document.getElementById(id)
+        if (elemento) {
+          elemento.textContent = valor || "-"
+        }
+      }
+
+      asignar("verNombre", datos.nombre)
+      asignar("verDni", datos.dni)
+      asignar("verEmail", datos.email)
+      asignar("verTelefono", datos.telefono)
+      asignar("verDireccion", datos.direccion)
+      asignar("verLocalidad", datos.localidad)
+      asignar("verTipo", datos.tipo)
+      asignar("verObservaciones", datos.observaciones)
+
+      // Agregar link WhatsApp dinámico
+      const telefono = datos.telefono || "";
+      const btnWhatsapp = document.getElementById("btnWhatsapp");
+
+      if (telefono.trim() !== "") {
+        const numeroLimpio = telefono.replace(/\D/g, "");
+        btnWhatsapp.href = `https://wa.me/${numeroLimpio}`;
+        btnWhatsapp.style.display = "inline-block";
+      } else {
+        btnWhatsapp.style.display = "none";
+      }
+
+      return
+    }
+
+    // === CLIENTE: EDITAR ===
+    if (button.classList.contains("btn-warning") && button.getAttribute("data-bs-target") === "#modalEditarCliente") {
+      console.log("✏️ === MODAL EDITAR CLIENTE ===")
+
+      const datos = {
+        id: button.getAttribute("data-id"),
+        nombre: button.getAttribute("data-nombre"),
+        dni: button.getAttribute("data-dni"),
+        email: button.getAttribute("data-email"),
+        telefono: button.getAttribute("data-telefono"),
+        direccion: button.getAttribute("data-direccion"),
+        localidad: button.getAttribute("data-localidad"),
+        tipo: button.getAttribute("data-tipo"),
+        observaciones: button.getAttribute("data-observaciones"),
+      }
+
+      // Asignar valores a los campos del formulario
+      const asignarCampo = (id, valor) => {
+        const elemento = document.getElementById(id)
+        if (elemento) {
+          elemento.value = valor || ""
+        }
+      }
+
+      asignarCampo("editarId", datos.id)
+      asignarCampo("editarNombre", datos.nombre)
+      asignarCampo("editarDni", datos.dni)
+      asignarCampo("editarEmail", datos.email)
+      asignarCampo("editarTelefono", datos.telefono)
+      asignarCampo("editarDireccion", datos.direccion)
+      asignarCampo("editarLocalidad", datos.localidad)
+      asignarCampo("editarTipo", datos.tipo)
+      asignarCampo("editarObservaciones", datos.observaciones)
+      return
+    }
+
+    // === CLIENTE: ELIMINAR ===
+    if (button.classList.contains("btn-danger") && button.getAttribute("data-bs-target") === "#modalEliminarCliente") {
+
+      const id = button.getAttribute("data-id")
+
+      const eliminarIdInput = document.getElementById("eliminarId")
+
+      if (eliminarIdInput) {
+        eliminarIdInput.value = id || ""
+      }
+      return
+    }
+  }
+
+
+
+  // Función para mostrar mensaje
+  function mostrarMensaje(texto, tipo = "success") {
+    const contenedor = document.getElementById("mensajeCliente")
+    if (!contenedor) return
+
+    contenedor.textContent = texto
+    contenedor.className = `mensaje-flotante alert-${tipo}`
+    contenedor.classList.remove("d-none")
+
+    setTimeout(() => {
+      contenedor.classList.add("d-none")
+    }, 3000)
+  }
+
+  // Función para enviar formularios (agregar, editar, eliminar)
+  function enviarFormulario(event, tipo) {
+    event.preventDefault()
+    const formData = new FormData(event.target)
+
+    fetch(event.target.action, {
+      method: "POST",
+      body: formData,
     })
-    .catch((error) => {
-      console.error("Error:", error)
-      alert("Error al agregar el cliente")
-    })
+      .then(response => response.text())
+      .then(data => {
+        switch (tipo) {
+          case "agregar":
+            mostrarMensaje("✅ Cliente agregado con éxito", "success");
+            setTimeout(() => location.reload(), 1500);
+            break;
+          case "editar":
+            mostrarMensaje("✅ Cliente editado con éxito", "success");
+            setTimeout(() => location.reload(), 1500);
+            break;
+          case "eliminar":
+            mostrarMensaje("✅ Cliente eliminado con éxito", "success");
+            setTimeout(() => location.reload(), 1500);
+            break;
+          default:
+            mostrarMensaje("✅ Operación exitosa", "success");
+            setTimeout(() => location.reload(), 1500);
+        }
+      })
+      .catch(error => {
+        console.error("❌ Error:", error)
+        mostrarMensaje(`Error al ${tipo.toLowerCase()} el cliente`, "danger")
+      })
 
-  return false
-}
+  }
 
-// Función para manejar el envío del formulario de editar
-function enviarEditarCliente(event) {
-  event.preventDefault()
+  // Configurar event listeners
+  function configurarEventListeners() {
+    // Clicks en botones
+    document.addEventListener("click", manejarClickClientes)
 
-  const form = event.target
-  const formData = new FormData(form)
+    // Formularios
+    const formAgregar = document.getElementById("formAgregarCliente")
+    const formEditar = document.getElementById("formEditarCliente")
+    const formEliminar = document.getElementById("formEliminarCliente")
 
-  fetch(form.action, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.text())
-    .then((data) => {
-      // Cerrar modal y recargar página
-      const modal = window.bootstrap.Modal.getInstance(document.getElementById("modalEditarCliente"))
-      modal.hide()
-      location.reload()
-    })
-    .catch((error) => {
-      console.error("Error:", error)
-      alert("Error al editar el cliente")
-    })
+    if (formAgregar) {
+      formAgregar.addEventListener("submit", (e) => enviarFormulario(e, "agregar"))
+    }
 
-  return false
-}
+    if (formEditar) {
+      formEditar.addEventListener("submit", (e) => enviarFormulario(e, "editar"))
+    }
 
-// Función para manejar el envío del formulario de eliminar
-function enviarEliminarCliente(event) {
-  event.preventDefault()
+    if (formEliminar) {
+      formEliminar.addEventListener("submit", (e) => enviarFormulario(e, "eliminar"))
+    }
 
-  const form = event.target
-  const formData = new FormData(form)
+    // Limpiar formularios al cerrar modales
+    const modalAgregar = document.getElementById("modalAgregarCliente")
+    if (modalAgregar) {
+      modalAgregar.addEventListener("hidden.bs.modal", () => {
+        const form = document.getElementById("formAgregarCliente")
+        const mensaje = document.getElementById("mensajeAgregarExito")
+        if (form) form.reset()
+        if (mensaje) mensaje.classList.add("d-none")
+      })
+    }
+  }
 
-  fetch(form.action, {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => response.text())
-    .then((data) => {
-      // Cerrar modal y recargar página
-      const modal = window.bootstrap.Modal.getInstance(document.getElementById("modalEliminarCliente"))
-      modal.hide()
-      location.reload()
-    })
-    .catch((error) => {
-      console.error("Error:", error)
-      alert("Error al eliminar el cliente")
-    })
+  // Inicializar inmediatamente
+  configurarEventListeners()
 
-  return false
-}
+  // Hacer funciones globales para poder usarlas en HTML
+  window.copiarTexto = copiarTexto
+
+  console.log("🎉 Módulo clientes configurado correctamente")
+})()

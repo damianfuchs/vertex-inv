@@ -16,14 +16,66 @@ $sqlProveedores = "SELECT COUNT(*) AS total_proveedores FROM proveedores";
 $resProveedores = mysqli_query($conexion, $sqlProveedores);
 $dataProveedores = mysqli_fetch_assoc($resProveedores);
 
-// Ventas del Mes (suponiendo que tenés una tabla ventas con una columna fecha y total)
-$sqlProveedores = "SELECT COUNT(*) AS total_proveedores FROM proveedores";
-$resProveedores = mysqli_query($conexion, $sqlProveedores);
-$dataProveedores = mysqli_fetch_assoc($resProveedores);
+//ACA VA LA CANTIDAD DE PEDIDOS-->
+// Cantidad de pedidos pendientes
+$sqlPedidosPendientes = "SELECT COUNT(*) AS total_pedidos_pendientes FROM pedidos WHERE estado_pedido = 'Pendiente'";
+$resPedidosPendientes = mysqli_query($conexion, $sqlPedidosPendientes);
+$dataPedidosPendientes = mysqli_fetch_assoc($resPedidosPendientes);
+
+
 
 ?>
 
 <style>
+    .card-inventario {
+        background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        height: 120px;
+    }
+
+    .card-inventario:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-inventario i {
+        font-size: 2.5rem;
+        opacity: 0.9;
+    }
+
+    .card-inventario .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .card-inventario small {
+        opacity: 0.8;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .card-inventario small {
+        color: #dce1ecff !important;
+        /* Elegí el color que quieras */
+    }
+
     .modern-title {
         font-family: 'Nunito Sans', sans-serif;
         font-weight: 300;
@@ -34,11 +86,11 @@ $dataProveedores = mysqli_fetch_assoc($resProveedores);
         border-left: 4px solid #3498db;
         padding-left: 10px;
         transition: color 0.3s ease;
-        cursor: pointer;
+ 
     }
 
     .modern-title i {
-        font-size: 1.8rem;
+        font-size: 2.4rem;
         color: #3498db;
         transition: color 0.3s ease, transform 0.3s ease;
     }
@@ -133,7 +185,7 @@ $dataProveedores = mysqli_fetch_assoc($resProveedores);
         <div class="col-12">
             <h4 class="modern-title mb-4">
                 <i class="bi bi-graph-up"></i> Resumen Rápido
-            </h4>   
+            </h4>
 
         </div>
         <div class="col-md-3">
@@ -143,7 +195,7 @@ $dataProveedores = mysqli_fetch_assoc($resProveedores);
                         <i class="bi bi-box"></i>
                     </h5>
                     <h3 class="text-primary"><?= $dataProductos['total_productos'] ?></h3>
-                    <p class="card-text">Total Productos</p>
+                    <p class="card-text">Productos</p>
                 </div>
             </div>
         </div>
@@ -154,7 +206,7 @@ $dataProveedores = mysqli_fetch_assoc($resProveedores);
                         <i class="bi bi-people"></i>
                     </h5>
                     <h3 class="text-success"><?= $dataClientes['total_clientes'] ?></h3>
-                    <p class="card-text">Clientes Activos</p>
+                    <p class="card-text">Clientes</p>
                 </div>
             </div>
         </div>
@@ -169,69 +221,23 @@ $dataProveedores = mysqli_fetch_assoc($resProveedores);
                 </div>
             </div>
         </div>
-        <!-- ACA VA LA CANTIDAD DE PEDIDOS DEPSUES CUANDO LO TERMINE-->
+        <!-- ACA VA LA CANTIDAD DE PEDIDOS-->
         <div class="col-md-3">
             <div class="card text-center">
                 <div class="card-body">
                     <h5 class="card-title text-info">
                         <i class="bi bi-receipt"></i>
                     </h5>
-                    <h3 class="text-info"><?= $dataProveedores['total_proveedores'] ?></h3>
-                    <p class="card-text">Pedidos Activos</p>
+                    <h3 class="text-info"><?= $dataPedidosPendientes['total_pedidos_pendientes'] ?></h3>
+                    <p class="card-text">Pedidos Pendientes</p>
                 </div>
             </div>
         </div>
+
 
     </div>
 </div>
 
 <style>
-    .card-inventario {
-        background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        height: 120px;
-    }
 
-    .card-inventario:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .card-inventario i {
-        font-size: 2.5rem;
-        opacity: 0.9;
-    }
-
-    .card-inventario .card-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .card-inventario small {
-        opacity: 0.8;
-    }
-
-    .card {
-        border: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease;
-    }
-
-    .card:hover {
-        transform: translateY(-2px);
-    }
-
-    .card-inventario small {
-        color: #dce1ecff !important;
-        /* Elegí el color que quieras */
-    }
 </style>

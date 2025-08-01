@@ -34,15 +34,22 @@ include('./db/conexion.php'); ?>
 
         .modern-title {
             font-family: 'Nunito Sans', sans-serif;
-            font-weight: 300;
+            font-weight: 600;
+            /* un poco más grueso para destacar */
+            font-size: 1.6rem;
+            color: #2c3e50;
+            /* un azul oscuro moderno */
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #2c3e50;
+            gap: 0.75rem;
+            /* espacio entre icono y texto */
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            /* espacio entre letras */
             border-left: 4px solid #3498db;
-            padding-left: 10px;
+            /* barra lateral color azul */
+            padding-left: 12px;
             transition: color 0.3s ease;
-            cursor: pointer;
         }
 
         .modern-title i {
@@ -59,6 +66,36 @@ include('./db/conexion.php'); ?>
             color: #2980b9;
             transform: scale(1.1) rotate(10deg);
         }
+
+        .mensaje-flotante {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1055;
+            /* más alto que modal para que se vea */
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.3rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            font-weight: 500;
+            color: white;
+            opacity: 0.95;
+            transition: opacity 0.3s ease;
+        }
+
+        .mensaje-flotante.alert-success {
+            background-color: #198754;
+            /* verde Bootstrap */
+        }
+
+        .mensaje-flotante.alert-danger {
+            background-color: #dc3545;
+            /* rojo Bootstrap */
+        }
+
+        .mensaje-flotante.d-none {
+            display: none;
+        }
     </style>
 
 </head>
@@ -70,12 +107,13 @@ include('./db/conexion.php'); ?>
         </h2>
 
 
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregarCliente"
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAgregarCliente"
             style="margin-bottom: 28px;">
             <i class="bi bi-person-fill-add"></i> Agregar Cliente
         </button>
 
 
+        <div id="mensajeCliente" class="alert mensaje-flotante d-none" role="alert"></div>
 
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
@@ -176,10 +214,10 @@ include('./db/conexion.php'); ?>
                         <p>
                             <strong>Teléfono:</strong>
                             <span id="verTelefono"></span>
-                            <button type="button" class="btn btn-sm btn-outline-success ms-2"
-                                onclick="copiarTexto('verTelefono', this)" title="Copiar teléfono">
-                                <i class="bi bi-clipboard"></i> Copiar
-                            </button>
+                            <a href="#" id="btnWhatsapp" target="_blank" class="btn btn-sm btn-success ms-2"
+                                title="Abrir WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
                         </p>
 
                         <p><strong>Dirección:</strong> <span id="verDireccion"></span></p>
@@ -197,7 +235,8 @@ include('./db/conexion.php'); ?>
 
 
         <!-- Modal Editar Cliente -->
-        <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+        <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <form id="formEditarCliente" class="modal-content" method="POST"
                     action="modulos/controllers/editar_cliente.php" onsubmit="return enviarEditarCliente(event)">
@@ -218,7 +257,7 @@ include('./db/conexion.php'); ?>
                         </div>
                         <div class="mb-3">
                             <label for="editarEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="editarEmail" name="email_clientes">
+                            <input type="text" class="form-control" id="editarEmail" name="email_clientes">
                         </div>
                         <div class="mb-3">
                             <label for="editarTelefono" class="form-label">Teléfono</label>
@@ -263,7 +302,7 @@ include('./db/conexion.php'); ?>
                 <form id="formEliminarCliente" class="modal-content" method="POST"
                     action="modulos/controllers/eliminar_cliente.php" onsubmit="return enviarEliminarCliente(event)">
                     <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="modalEliminarLabel">Confirmar Eliminación</h5>h
+                        <h5 class="modal-title" id="modalEliminarLabel">Confirmar Eliminación</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Cerrar"></button>
                     </div>
@@ -296,7 +335,8 @@ include('./db/conexion.php'); ?>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="agregarNombre" class="form-label">Nombre *</label>
-                                <input type="text" class="form-control" id="agregarNombre" name="nombre_clientes" required>
+                                <input type="text" class="form-control" id="agregarNombre" name="nombre_clientes"
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label for="agregarDni" class="form-label">DNI / CUIT</label>
@@ -304,7 +344,7 @@ include('./db/conexion.php'); ?>
                             </div>
                             <div class="col-md-6">
                                 <label for="agregarEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="agregarEmail" name="email_clientes">
+                                <input type="text" class="form-control" id="agregarEmail" name="email_clientes">
                             </div>
                             <div class="col-md-6">
                                 <label for="agregarTelefono" class="form-label">Teléfono</label>
@@ -355,6 +395,7 @@ include('./db/conexion.php'); ?>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./modulos/js/clientes.js?v=<?= time() ?>" defer></script>
 
 
 

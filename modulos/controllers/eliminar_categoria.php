@@ -1,4 +1,6 @@
 <?php
+// Limpiar cualquier output buffer previo
+ob_clean();
 header('Content-Type: application/json');
 include('../db/conexion.php');
 

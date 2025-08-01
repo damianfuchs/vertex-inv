@@ -4,15 +4,22 @@
 <style>
     .modern-title {
         font-family: 'Nunito Sans', sans-serif;
-        font-weight: 300;
+        font-weight: 600;
+        /* un poco más grueso para destacar */
+        font-size: 1.6rem;
+        color: #2c3e50;
+        /* un azul oscuro moderno */
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        color: #2c3e50;
+        gap: 0.75rem;
+        /* espacio entre icono y texto */
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        /* espacio entre letras */
         border-left: 4px solid #3498db;
-        padding-left: 10px;
+        /* barra lateral color azul */
+        padding-left: 12px;
         transition: color 0.3s ease;
-        cursor: pointer;
     }
 
     .modern-title i {
