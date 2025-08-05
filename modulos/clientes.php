@@ -96,6 +96,46 @@ include('./db/conexion.php'); ?>
         .mensaje-flotante.d-none {
             display: none;
         }
+
+
+        /* DISEÑO DEL MODAL AGREGAR */
+
+        #modalAgregarCliente .modal-content {
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 6px 18px rgba(31, 44, 76, 0.25);
+        }
+
+        #modalAgregarCliente .modal-header {
+            background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);
+            color: white;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        #modalAgregarCliente .form-control,
+        #modalAgregarCliente textarea,
+        #modalAgregarCliente .form-select {
+            border-radius: 12px;
+        }
+
+        #modalAgregarCliente .form-control:focus,
+        #modalAgregarCliente textarea:focus,
+        #modalAgregarCliente .form-select:focus {
+            border-color: #3b5680;
+            box-shadow: 0 0 0 0.2rem rgba(59, 86, 128, 0.25);
+        }
+
+        #modalAgregarCliente .btn-success {
+            background-color: #3b5680;
+            border: none;
+            border-radius: 12px;
+        }
+
+        #modalAgregarCliente .btn-success:hover {
+            background-color: #2c3f5d;
+        }
     </style>
 
 </head>
@@ -108,7 +148,7 @@ include('./db/conexion.php'); ?>
 
 
         <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAgregarCliente"
-            style="margin-bottom: 28px;">
+            style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%); border: none; color: white;">
             <i class="bi bi-person-fill-add"></i> Agregar Cliente
         </button>
 

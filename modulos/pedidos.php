@@ -83,6 +83,47 @@ include('./db/conexion.php');
         .mensaje-flotante.d-none {
             display: none;
         }
+
+
+        
+        /* DISEÑO DEL MODAL AGREGAR */
+
+        #modalAgregarPedido .modal-content {
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 6px 18px rgba(31, 44, 76, 0.25);
+        }
+
+        #modalAgregarPedido .modal-header {
+            background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);
+            color: white;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        #modalAgregarPedido .form-control,
+        #modalAgregarPedido .form-select,
+        #modalAgregarPedido textarea {
+            border-radius: 12px;
+        }
+
+        #modalAgregarPedido .form-control:focus,
+        #modalAgregarPedido .form-select:focus,
+        #modalAgregarPedido textarea:focus {
+            border-color: #3b5680;
+            box-shadow: 0 0 0 0.2rem rgba(59, 86, 128, 0.25);
+        }
+
+        #modalAgregarPedido .btn-success {
+            background-color: #3b5680;
+            border: none;
+            border-radius: 12px;
+        }
+
+        #modalAgregarPedido .btn-success:hover {
+            background-color: #2c3f5d;
+        }
     </style>
 </head>
 
@@ -92,7 +133,8 @@ include('./db/conexion.php');
             <i class="bi bi-card-checklist"></i> Gestión de Pedidos
         </h2>
 
-        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAgregarPedido">
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAgregarPedido"
+            style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%); border: none; color: white;">
             <i class="bi bi-plus-circle"></i> Agregar Pedido
         </button>
 
@@ -306,13 +348,14 @@ include('./db/conexion.php');
                                 <label for="agregarEstadoPedido" class="form-label">Estado *</label>
                                 <select class="form-select" id="agregarEstadoPedido" name="estado_pedido" required>
                                     <option value="">Seleccione estado</option>
-                                     <option value="Pendiente" selected>Pendiente</option>
+                                    <option value="Pendiente" selected>Pendiente</option>
                                     <option value="Entregado">Entregado</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="agregarFechaPedido" class="form-label">Fecha *</label>
-                                <input type="date" class="form-control" id="agregarFechaPedido" name="fecha_pedido" required />
+                                <input type="date" class="form-control" id="agregarFechaPedido" name="fecha_pedido"
+                                    required />
 
                             </div>
                             <div class="col-12">

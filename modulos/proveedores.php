@@ -67,7 +67,7 @@ include('./db/conexion.php');
         }
 
         .modern-title {
-             font-family: 'Nunito Sans', sans-serif;
+            font-family: 'Nunito Sans', sans-serif;
             font-weight: 600;
             /* un poco más grueso para destacar */
             font-size: 1.6rem;
@@ -100,6 +100,46 @@ include('./db/conexion.php');
             color: #2980b9;
             transform: scale(1.1) rotate(10deg);
         }
+
+
+        /* DISEÑO DEL MODAL AGREGAR */
+        
+        #modalAgregarProveedor .modal-content {
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 6px 18px rgba(31, 44, 76, 0.25);
+        }
+
+        #modalAgregarProveedor .modal-header {
+            background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);
+            color: white;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        #modalAgregarProveedor .form-control,
+        #modalAgregarProveedor textarea,
+        #modalAgregarProveedor .form-select {
+            border-radius: 12px;
+        }
+
+        #modalAgregarProveedor .form-control:focus,
+        #modalAgregarProveedor textarea:focus,
+        #modalAgregarProveedor .form-select:focus {
+            border-color: #3b5680;
+            box-shadow: 0 0 0 0.2rem rgba(59, 86, 128, 0.25);
+        }
+
+        #modalAgregarProveedor .btn-success {
+            background-color: #3b5680;
+            border: none;
+            border-radius: 12px;
+        }
+
+        #modalAgregarProveedor .btn-success:hover {
+            background-color: #2c3f5d;
+        }
     </style>
 </head>
 
@@ -113,7 +153,8 @@ include('./db/conexion.php');
 
 
         <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal"
-            data-bs-target="#modalAgregarProveedor" style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%); border: none; color: white;">
+            data-bs-target="#modalAgregarProveedor"
+            style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%); border: none; color: white;">
             <i class="bi bi-truck"></i> Agregar Proveedor
         </button>
 
@@ -240,7 +281,7 @@ include('./db/conexion.php');
                                 <span id="verTelefono"></span>
                                 <a id="btnWhatsapp" class="btn btn-sm btn-success ms-2" target="_blank"
                                     style="display:none;">
-                                    <i class="bi bi-whatsapp"></i> 
+                                    <i class="bi bi-whatsapp"></i>
                                 </a>
                             </p>
 

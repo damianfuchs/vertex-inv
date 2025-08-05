@@ -83,7 +83,47 @@ include('./db/conexion.php');
             /* fondo rojo claro */
             color: #fffefeff !important;
             /* texto rojo oscuro */
-            
+
+        }
+
+
+        /* DISEÑO DEL MODAL AGREGAR */
+
+        #modalAgregarProducto .modal-content {
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 6px 18px rgba(31, 44, 76, 0.25);
+        }
+
+        #modalAgregarProducto .modal-header {
+            background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);
+            color: white;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        #modalAgregarProducto .form-control,
+        #modalAgregarProducto .form-select,
+        #modalAgregarProducto textarea {
+            border-radius: 12px;
+        }
+
+        #modalAgregarProducto .form-control:focus,
+        #modalAgregarProducto .form-select:focus,
+        #modalAgregarProducto textarea:focus {
+            border-color: #3b5680;
+            box-shadow: 0 0 0 0.2rem rgba(59, 86, 128, 0.25);
+        }
+
+        #modalAgregarProducto .btn-success {
+            background-color: #3b5680;
+            border: none;
+            border-radius: 12px;
+        }
+
+        #modalAgregarProducto .btn-success:hover {
+            background-color: #2c3f5d;
         }
     </style>
 </head>
@@ -91,7 +131,7 @@ include('./db/conexion.php');
 <body>
     <div class="container-fluid">
         <h2 class="modern-title mb-4">
-            <i class="bi bi-box"></i>Gestión de Productos
+            <i class="bi bi-box"></i>Gestión de Inventario
         </h2>
 
 

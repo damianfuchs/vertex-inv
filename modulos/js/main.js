@@ -123,7 +123,7 @@ console.log("🚀 Sistema principal iniciado")
     }
 
     // Lista de páginas que tienen scripts específicos
-    const paginasConScript = ["proveedores", "categorias", "productos", "clientes", "pedidos"]
+    const paginasConScript = ["proveedores", "categorias", "productos", "clientes", "pedidos", "ventas", "buscar"]
 
 
     if (paginasConScript.includes(page)) {
