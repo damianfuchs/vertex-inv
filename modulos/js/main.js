@@ -87,9 +87,12 @@ console.log("🚀 Sistema principal iniciado")
       </div>
     `
 
-    fetch(`modulos/${page}.php`)
+    // Añadir parámetro de cache-busting a la URL del archivo PHP
+    fetch(`modulos/${page}.php?v=${Date.now()}`)
       .then((response) => {
         console.log(`📡 Respuesta ${page}:`, response.status)
+        // Log del Content-Type de la respuesta
+        console.log(`📡 Content-Type de ${page}:`, response.headers.get('Content-Type'));
         if (!response.ok) {
           throw new Error(`Error ${response.status}`)
         }
@@ -113,6 +116,10 @@ console.log("🚀 Sistema principal iniciado")
         `
       })
   }
+
+  // Exponer cargarPagina globalmente para que otros módulos puedan usarla
+  window.app = window.app || {};
+  window.app.cargarPagina = cargarPagina;
 
   // Función para cargar scripts específicos
   function cargarScriptEspecifico(page) {

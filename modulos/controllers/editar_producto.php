@@ -1,6 +1,6 @@
 <?php
 // Incluir la conexión a la base de datos
-include('../db/conexion.php');
+include('../db/conexion.php'); // Adjusted path for controller
 
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -36,6 +36,7 @@ try {
     if ($fila_imagen = $resultado_imagen_actual->fetch_assoc()) {
         $imagen_actual = $fila_imagen['imagen_prod'];
     }
+    $stmt_imagen_actual->close(); // Close this statement
 
     // Manejar la imagen si se subió una nueva
     $imagen_prod = $imagen_actual; // Por defecto, mantener la imagen actual
@@ -59,8 +60,8 @@ try {
         
         // Generar nombre único
         $nuevo_nombre = 'producto_' . $id_prod . '_' . time() . '.' . $extension;
-        $ruta_destino = '../../img/' . $nuevo_nombre;
-        
+        $ruta_destino = '../../img/' . $nuevo_nombre; // Correct path for saving
+
         // Crear directorio si no existe
         if (!file_exists('../../img/')) {
             mkdir('../../img/', 0777, true);
@@ -69,8 +70,9 @@ try {
         // Mover archivo
         if (move_uploaded_file($tmp_name, $ruta_destino)) {
             // Eliminar imagen anterior si existe y es diferente
-            if ($imagen_actual && $imagen_actual !== $nuevo_nombre && file_exists('../img/' . $imagen_actual)) {
-                unlink('../img/' . $imagen_actual);
+            // Note: The path for unlink should be relative to the script or absolute
+            if ($imagen_actual && $imagen_actual !== $nuevo_nombre && file_exists('../../img/' . $imagen_actual)) {
+                unlink('../../img/' . $imagen_actual);
             }
             $imagen_prod = $nuevo_nombre;
         } else {
@@ -92,6 +94,11 @@ try {
             WHERE id_prod = ?";
     
     $stmt = $conexion->prepare($sql);
+    
+    if (!$stmt) {
+        throw new Exception('Error al preparar la consulta: ' . $conexion->error);
+    }
+
     $stmt->bind_param("sssississi", 
         $codigo_prod, 
         $nombre_prod, 
@@ -107,7 +114,7 @@ try {
 
     // Ejecutar la consulta
     if ($stmt->execute()) {
-        // Obtener los datos actualizados del producto
+        // Obtener los datos actualizados del producto, incluyendo el nombre de la categoría
         $consulta_actualizada = "SELECT p.*, c.nombre_categ 
                                 FROM productos p
                                 LEFT JOIN categorias c ON p.categoria_id = c.id_categ 
@@ -117,12 +124,13 @@ try {
         $stmt_actualizada->execute();
         $resultado_actualizada = $stmt_actualizada->get_result();
         $producto_actualizado = $resultado_actualizada->fetch_assoc();
+        $stmt_actualizada->close();
 
         echo json_encode([
             'success' => true,
             'message' => 'Producto editado correctamente',
             'id' => $id_prod,
-            'producto' => $producto_actualizado
+            'product' => $producto_actualizado // Ensure it's 'product' for consistency
         ]);
     } else {
         throw new Exception('Error al ejecutar la consulta: ' . $stmt->error);
@@ -138,12 +146,6 @@ try {
     // Cerrar conexiones
     if (isset($stmt)) {
         $stmt->close();
-    }
-    if (isset($stmt_imagen_actual)) {
-        $stmt_imagen_actual->close();
-    }
-    if (isset($stmt_actualizada)) {
-        $stmt_actualizada->close();
     }
     if (isset($conexion)) {
         $conexion->close();

@@ -238,6 +238,3 @@ $dataPedidosPendientes = mysqli_fetch_assoc($resPedidosPendientes);
     </div>
 </div>
 
-<style>
-
-</style>

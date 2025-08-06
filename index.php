@@ -87,8 +87,7 @@
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
     
-    <!-- Solo cargar navegacion.js -->
-    <script src="modulos/js/navegacion.js?v=<?= time() ?>"></script>
+    <!-- Solo cargar main.js, que ahora maneja la navegación y el menú -->
     <script src="modulos/js/main.js?v=<?= time() ?>"></script>
 
 </body>

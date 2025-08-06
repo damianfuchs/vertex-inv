@@ -1,4 +1,4 @@
-console.log("🚀 Módulo productos.js cargado - VERSIÓN CORREGIDA v2.2")
+console.log("🚀 Módulo productos.js cargado - VERSIÓN CORREGIDA v2.4 (Fix this.cerrarModal)")
 
 // Prevenir múltiples inicializaciones
 if (window.productosManagerLoaded) {
@@ -136,7 +136,8 @@ if (window.productosManagerLoaded) {
       console.log("✅ Datos de eliminación preparados")
     }
 
-    async enviarFormulario(e, tipo) {
+    // Convertir enviarFormulario a una función de flecha para mantener el contexto 'this'
+    enviarFormulario = async (e, tipo) => { // <--- CAMBIO CLAVE AQUÍ
       const form = e.target
       const formData = new FormData(form)
       const submitBtn = form.querySelector('button[type="submit"]')
@@ -180,25 +181,16 @@ if (window.productosManagerLoaded) {
 
         if (result.success) {
           this.mostrarMensaje(result.message, "success")
-          this.cerrarModal(form)
+          this.cerrarModal(form) // Esto ahora debería funcionar correctamente
 
           if (tipo === "agregar") {
             form.reset()
+            this.agregarFilaProducto(result.product)
+          } else if (tipo === "editar") {
+            this.actualizarFilaProducto(result.product)
+          } else if (tipo === "eliminar") {
+            this.eliminarFilaProducto(result.id)
           }
-
-          // Recargar página completa para asegurar actualización
-          setTimeout(() => {
-            window.location.reload()
-          }, 1000)
-
-          // Timeout de seguridad: si después de 10 segundos sigue cargando, recargar página
-          setTimeout(() => {
-            const loadingElement = document.querySelector('tbody td:contains("Actualizando productos...")')
-            if (loadingElement || document.querySelector(".spinner-border")) {
-              console.log("⚠️ Timeout de actualización, recargando página...")
-              window.location.reload()
-            }
-          }, 10000)
         } else {
           throw new Error(result.message || "Error desconocido")
         }
@@ -219,65 +211,125 @@ if (window.productosManagerLoaded) {
       }
     }
 
-    async actualizarTabla() {
-      try {
-        console.log("🔄 Actualizando tabla...")
+    // Helper to generate a table row HTML
+    generateProductRowHtml(product) {
+      const stockClass = (product.stock_prod === '0' || product.stock_prod === 0) ? 'fila-stock-cero' : '';
+      const imageUrl = product.imagen_prod ? `./img/${product.imagen_prod}?v=${Date.now()}` : '/placeholder.svg?height=50&width=50';
+      const imageHtml = product.imagen_prod ? `<img src="${imageUrl}" alt="Imagen" style="max-width: 50px;">` : 'Sin imagen';
+      const categoryName = product.nombre_categ || 'Sin categoría'; // Use nombre_categ from PHP response
 
-        const tbody = document.querySelector("table tbody")
-        if (!tbody) {
-          console.error("❌ No se encontró tbody")
-          return
-        }
+      return `
+        <tr data-producto-id="${product.id_prod}" class="${stockClass}">
+          <td>${product.codigo_prod}</td>
+          <td>${product.nombre_prod}</td>
+          <td>${product.descripcion_prod}</td>
+          <td>${categoryName}</td>
+          <td>${product.materia_prod}</td>
+          <td>${product.peso_prod} kg</td>
+          <td>${product.stock_prod}</td>
+          <td>${product.ubicacion_prod}</td>
+          <td>${imageHtml}</td>
+          <td>
+            <button class="btn btn-sm btn-info btn-ver" data-bs-toggle="modal"
+                data-bs-target="#modalVerProducto" 
+                data-id="${product.id_prod}"
+                data-codigo="${product.codigo_prod}"
+                data-nombre="${product.nombre_prod}"
+                data-descripcion="${product.descripcion_prod}"
+                data-materia="${product.materia_prod}"
+                data-peso="${product.peso_prod}"
+                data-stock="${product.stock_prod}"
+                data-ubicacion="${product.ubicacion_prod}"
+                data-imagen="${product.imagen_prod}"
+                data-categoria="${categoryName}"
+                data-categoria-id="${product.categoria_id}">
+                <i class="bi bi-eye"></i>
+            </button>
 
-        // Mostrar loading
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="11" class="text-center py-4">
-              <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-              Actualizando productos...
-            </td>
-          </tr>
-        `
+            <button class="btn btn-sm btn-warning btn-editar" data-bs-toggle="modal"
+                data-bs-target="#modalEditarProducto" 
+                data-id="${product.id_prod}"
+                data-codigo="${product.codigo_prod}"
+                data-nombre="${product.nombre_prod}"
+                data-descripcion="${product.descripcion_prod}"
+                data-materia="${product.materia_prod}"
+                data-peso="${product.peso_prod}"
+                data-stock="${product.stock_prod}"
+                data-ubicacion="${product.ubicacion_prod}"
+                data-imagen="${product.imagen_prod}"
+                data-categoria-id="${product.categoria_id}"
+                data-categoria="${categoryName}">
+                <i class="bi bi-pencil-square"></i>
+            </button>
 
-        // Agregar timestamp para evitar caché
-        const url = window.location.href.split("?")[0] + "?refresh=" + Date.now()
-        console.log("📡 Fetching:", url)
+            <button class="btn btn-sm btn-danger btn-eliminar" data-bs-toggle="modal"
+                data-bs-target="#modalEliminarProducto" 
+                data-id="${product.id_prod}"
+                data-nombre="${product.nombre_prod}">
+                <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+    }
 
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
-          },
-        })
+    agregarFilaProducto(newProduct) {
+      const tableBody = document.querySelector("table tbody");
+      if (!tableBody) {
+        console.error("❌ No se encontró el tbody de la tabla de productos.");
+        return;
+      }
 
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`)
-        }
+      // Remove "No hay productos registrados" row if it exists
+      const noDataRow = tableBody.querySelector("tr td[colspan='11']");
+      if (noDataRow) {
+        noDataRow.closest("tr").remove();
+      }
 
-        const html = await response.text()
-        console.log("📄 HTML recibido, longitud:", html.length)
+      const newRowHtml = this.generateProductRowHtml(newProduct);
+      // Prepend the new row to the beginning of the table
+      tableBody.insertAdjacentHTML('afterbegin', newRowHtml);
+      console.log("✅ Fila de producto agregada dinámicamente.");
+    }
 
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(html, "text/html")
-        const nuevaTabla = doc.querySelector("table tbody")
-
-        if (nuevaTabla && nuevaTabla.innerHTML.trim()) {
-          tbody.innerHTML = nuevaTabla.innerHTML
-          console.log("✅ Tabla actualizada correctamente")
-        } else {
-          console.error("❌ No se encontró contenido válido en la nueva tabla")
-          // Fallback: recargar la página
-          window.location.reload()
-        }
-      } catch (error) {
-        console.error("❌ Error al actualizar tabla:", error)
-
-        // En caso de error, recargar la página completa
-        console.log("🔄 Recargando página como fallback...")
-        window.location.reload()
+    actualizarFilaProducto(updatedProduct) {
+      const existingRow = document.querySelector(`tr[data-producto-id="${updatedProduct.id_prod}"]`);
+      if (existingRow) {
+        const updatedRowHtml = this.generateProductRowHtml(updatedProduct);
+        existingRow.outerHTML = updatedRowHtml; // Replace the entire row
+        console.log("✅ Fila de producto actualizada dinámicamente.");
+      } else {
+        console.warn(`⚠️ No se encontró la fila para el producto ID ${updatedProduct.id_prod}. Recargando página.`);
+        // Fallback if row not found (e.g., if it was filtered out)
+        window.location.reload();
       }
     }
+
+    eliminarFilaProducto(productId) {
+      const rowToDelete = document.querySelector(`tr[data-producto-id="${productId}"]`);
+      if (rowToDelete) {
+        rowToDelete.remove();
+        console.log(`✅ Fila de producto ID ${productId} eliminada dinámicamente.`);
+
+        // Check if table is now empty
+        const tableBody = document.querySelector("table tbody");
+        if (tableBody && !tableBody.querySelector("tr")) {
+          tableBody.innerHTML = `<tr><td colspan='11' class='text-center'>No hay productos registrados</td></tr>`;
+        }
+      } else {
+        console.warn(`⚠️ No se encontró la fila para el producto ID ${productId}. Recargando página.`);
+        // Fallback if row not found
+        window.location.reload();
+      }
+    }
+
+    // The `actualizarTabla` function is no longer needed for add/edit/delete
+    // as we are doing direct DOM manipulation.
+    /*
+    async actualizarTabla() {
+      // ... (original actualizarTabla logic)
+    }
+    */
 
     mostrarMensaje(mensaje, tipo = "info") {
       // Remover alertas anteriores

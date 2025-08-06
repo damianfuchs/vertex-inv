@@ -1,118 +1,217 @@
+// Solo ejecutar si estamos en la página de categorías
 (function () {
-  'use strict';
+  'use strict'
 
-  console.log("🚀 Módulo categorias.js cargado");
-
+  // Verificar que estamos en la página correcta
   function esCategorias() {
-    return document.querySelector("#modalEditarCategoria") !== null;
+    return document.querySelector("#modalVerCategoria") !== null
   }
 
   if (!esCategorias()) {
-    console.log("⚠️ No estamos en la página de categorías");
-    return;
+    return
   }
 
-  console.log("✅ Página de categorías detectada, inicializando...");
+  const categoriasTableBody = document.getElementById("categoriasTableBody");
 
-  // Mostrar mensaje igual que proveedores.js
+  // Helper para crear una fila de tabla de categoría
+  function createCategoryRow(category) {
+    const row = document.createElement('tr');
+    row.setAttribute('data-id', category.id_categ);
+    row.innerHTML = `
+      <td>${category.codigo_categ || '-'}</td>
+      <td>${category.nombre_categ || '-'}</td>
+      <td>${category.descripcion_categ || '-'}</td>
+      <td>
+        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalVerCategoria"
+            data-id="${category.id_categ}"
+            data-codigo="${category.codigo_categ || ''}"
+            data-nombre="${category.nombre_categ || ''}"
+            data-descripcion="${category.descripcion_categ || ''}">
+            <i class="bi bi-eye"></i>
+        </button>
+        <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+            data-bs-target="#modalEditarCategoria" data-id="${category.id_categ}"
+            data-codigo="${category.codigo_categ || ''}"
+            data-nombre="${category.nombre_categ || ''}"
+            data-descripcion="${category.descripcion_categ || ''}">
+            <i class="bi bi-pencil-square"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
+            data-bs-target="#modalEliminarCategoria" data-id="${category.id_categ}">
+            <i class="bi bi-trash"></i>
+        </button>
+      </td>
+    `;
+    return row;
+  }
+
+  // Función para manejar clicks específicos de categorías
+  function manejarClickCategorias(event) {
+    const button = event.target.closest("button")
+    if (!button) return
+
+    // === CATEGORÍA: VER ===
+    if (button.classList.contains("btn-info") && button.getAttribute("data-bs-target") === "#modalVerCategoria") {
+      console.log("👁️ === MODAL VER CATEGORÍA ===")
+
+      const datos = {
+        id: button.getAttribute("data-id"),
+        codigo: button.getAttribute("data-codigo"),
+        nombre: button.getAttribute("data-nombre"),
+        descripcion: button.getAttribute("data-descripcion"),
+      }
+
+      // Asignar valores
+      const asignar = (id, valor) => {
+        const elemento = document.getElementById(id)
+        if (elemento) {
+          elemento.textContent = valor || "-"
+        }
+      }
+
+      asignar("verCodigo", datos.codigo)
+      asignar("verNombre", datos.nombre)
+      asignar("verDescripcion", datos.descripcion)
+      return
+    }
+
+    // === CATEGORÍA: EDITAR ===
+    if (button.classList.contains("btn-warning") && button.getAttribute("data-bs-target") === "#modalEditarCategoria") {
+      console.log("✏️ === MODAL EDITAR CATEGORÍA ===")
+
+      const datos = {
+        id: button.getAttribute("data-id"),
+        codigo: button.getAttribute("data-codigo"),
+        nombre: button.getAttribute("data-nombre"),
+        descripcion: button.getAttribute("data-descripcion"),
+      }
+
+      // Asignar valores a los campos del formulario
+      const asignarCampo = (id, valor) => {
+        const elemento = document.getElementById(id)
+        if (elemento) {
+          elemento.value = valor || ""
+        }
+      }
+
+      asignarCampo("editarId", datos.id)
+      asignarCampo("editarCodigo", datos.codigo)
+      asignarCampo("editarNombre", datos.nombre)
+      asignarCampo("editarDescripcion", datos.descripcion)
+      return
+    }
+
+    // === CATEGORÍA: ELIMINAR ===
+    if (button.classList.contains("btn-danger") && button.getAttribute("data-bs-target") === "#modalEliminarCategoria") {
+      console.log("🗑️ === MODAL ELIMINAR CATEGORÍA ===")
+      const id = button.getAttribute("data-id")
+
+      const eliminarIdInput = document.getElementById("eliminarId")
+
+      if (eliminarIdInput) {
+        eliminarIdInput.value = id || ""
+      }
+      return
+    }
+  }
+
+  // Función para mostrar mensaje
   function mostrarMensaje(texto, tipo = "success") {
-    const contenedor = document.getElementById("mensajeCategoria");
-    if (!contenedor) return;
+    const contenedor = document.getElementById("mensajeCategoria")
+    if (!contenedor) return
 
-    contenedor.textContent = texto;
-    contenedor.className = `mensaje-flotante alert-${tipo}`;
-    contenedor.classList.remove("d-none");
+    contenedor.textContent = texto
+    contenedor.className = `mensaje-flotante alert-${tipo}`
+    contenedor.classList.remove("d-none")
 
     setTimeout(() => {
-      contenedor.classList.add("d-none");
-    }, 3000);
+      contenedor.classList.add("d-none")
+    }, 3000)
   }
 
-  // Cerrar modal
-  function cerrarModal(form) {
-    const modal = bootstrap.Modal.getInstance(form.closest(".modal"));
-    if (modal) modal.hide();
-  }
-
-  // Enviar formulario
+  // Función para enviar formularios (agregar, editar, eliminar)
   function enviarFormulario(event, tipo) {
-    event.preventDefault();
-    console.log(`📝 Enviando formulario de ${tipo}...`);
+    event.preventDefault()
+    const formData = new FormData(event.target)
+    const modalId = event.target.closest('.modal').id;
+    const modalInstance = bootstrap.Modal.getInstance(document.getElementById(modalId));
 
-    const formData = new FormData(event.target);
 
     fetch(event.target.action, {
       method: "POST",
       body: formData,
     })
-      .then(response => response.text())
+      .then(response => response.json()) // Esperamos una respuesta JSON
       .then(data => {
-        try {
-          const jsonResponse = JSON.parse(data);
-          if (jsonResponse.success) {
-            mostrarMensaje("✅ " + jsonResponse.message, "success");
-            cerrarModal(event.target);
-            if (tipo === "agregar") event.target.reset();
-            setTimeout(() => location.reload(), 1500);
-          } else {
-            mostrarMensaje("❌ Error: " + jsonResponse.message, "danger");
+        if (data.success) {
+          mostrarMensaje(`✅ ${data.message}`, "success");
+          if (modalInstance) {
+            modalInstance.hide(); // Cerrar el modal
           }
-        } catch (e) {
-          mostrarMensaje(`✅ ${tipo} realizado con éxito`, "success");
-          cerrarModal(event.target);
-          if (tipo === "agregar") event.target.reset();
-          setTimeout(() => location.reload(), 1500);
+
+          // Actualizar la tabla dinámicamente
+          if (tipo === "agregar" && data.category) {
+            const newRow = createCategoryRow(data.category);
+            categoriasTableBody.appendChild(newRow);
+          } else if (tipo === "editar" && data.category) {
+            const existingRow = categoriasTableBody.querySelector(`tr[data-id="${data.category.id_categ}"]`);
+            if (existingRow) {
+              const updatedRow = createCategoryRow(data.category);
+              existingRow.replaceWith(updatedRow);
+            }
+          } else if (tipo === "eliminar" && data.id_categ) {
+            const rowToRemove = categoriasTableBody.querySelector(`tr[data-id="${data.id_categ}"]`);
+            if (rowToRemove) {
+              rowToRemove.remove();
+            }
+          }
+        } else {
+          mostrarMensaje(`❌ ${data.message}`, "danger");
         }
       })
       .catch(error => {
-        console.error("❌ Error:", error);
-        mostrarMensaje(`Error al ${tipo.toLowerCase()} la categoría`, "danger");
-      });
+        console.error("❌ Error:", error)
+        mostrarMensaje(`Error al ${tipo.toLowerCase()} la categoría`, "danger")
+      })
+
   }
 
-  // Cargar datos para editar (igual que tenés)
-  function cargarDatosEdicion(btn) {
-    const fila = btn.closest("tr");
-    if (!fila) return;
-    const datos = fila.dataset;
+  // Configurar event listeners
+  function configurarEventListeners() {
+    // Clicks en botones
+    document.addEventListener("click", manejarClickCategorias)
 
-    document.getElementById("editId").value = datos.id || "";
-    document.getElementById("editCodigo").value = datos.codigo || "";
-    document.getElementById("editNombre").value = datos.nombre || "";
-    document.getElementById("editDescripcion").value = datos.descripcion || "";
+    // Formularios
+    const formAgregar = document.getElementById("formAgregarCategoria")
+    const formEditar = document.getElementById("formEditarCategoria")
+    const formEliminar = document.getElementById("formEliminarCategoria")
 
-    const modalElement = document.getElementById("modalEditarCategoria");
-    if (modalElement) {
-      const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-      modal.show();
+    if (formAgregar) {
+      formAgregar.addEventListener("submit", (e) => enviarFormulario(e, "agregar"))
+    }
+
+    if (formEditar) {
+      formEditar.addEventListener("submit", (e) => enviarFormulario(e, "editar"))
+    }
+
+    if (formEliminar) {
+      formEliminar.addEventListener("submit", (e) => enviarFormulario(e, "eliminar"))
+    }
+
+    // Limpiar formularios al cerrar modales
+    const modalAgregar = document.getElementById("modalAgregarCategoria")
+    if (modalAgregar) {
+      modalAgregar.addEventListener("hidden.bs.modal", () => {
+        const form = document.getElementById("formAgregarCategoria")
+        const mensaje = document.getElementById("mensajeAgregarExito")
+        if (form) form.reset()
+        if (mensaje) mensaje.classList.add("d-none")
+      })
     }
   }
 
-  // Preparar eliminación
-  function prepararEliminacion(btn) {
-    const id = btn.getAttribute("data-id");
-    document.getElementById("deleteCategoriaId").value = id || "";
+  // Inicializar inmediatamente
+  configurarEventListeners()
 
-    const modalEliminar = document.getElementById("modalEliminarCategoria");
-    if (modalEliminar) {
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEliminar);
-      modal.show();
-    }
-  }
-
-  // Eventos click
-  document.body.addEventListener("click", (e) => {
-    if (e.target.closest(".btn-editar")) {
-      cargarDatosEdicion(e.target.closest(".btn-editar"));
-    }
-    if (e.target.closest(".btn-eliminar")) {
-      prepararEliminacion(e.target.closest(".btn-eliminar"));
-    }
-  });
-
-  // Eventos submit
-  document.getElementById("formAgregarCategoria")?.addEventListener("submit", e => enviarFormulario(e, "agregar"));
-  document.getElementById("formEditarCategoria")?.addEventListener("submit", e => enviarFormulario(e, "editar"));
-  document.getElementById("formEliminarCategoria")?.addEventListener("submit", e => enviarFormulario(e, "eliminar"));
-
-})();
+  console.log("🎉 Módulo categorías configurado correctamente")
+})()

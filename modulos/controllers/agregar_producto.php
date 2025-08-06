@@ -1,5 +1,5 @@
 <?php
-include('../db/conexion.php');
+include('../db/conexion.php'); // Adjusted path for controller
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoria_id = $_POST['categoria_id'] ?? null;
@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $materia_prod = $_POST['materia_prod'] ?? '';
     $peso_prod = $_POST['peso_prod'] ?? 0;
     $stock_prod = $_POST['stock_prod'] ?? 0;
-    $ubicacion_prod = $_POST['ubicacion_prod'] ?? 0;
+    $ubicacion_prod = $_POST['ubicacion_prod'] ?? '';
 
     $imagen_prod = "";  // inicializo como string vacía
 
@@ -20,6 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nombreArchivoNuevo = uniqid('img_') . "." . $ext;
         $rutaDestino = "../../img/" . $nombreArchivoNuevo;
 
+        // Ensure the directory exists
+        if (!file_exists('../../img/')) {
+            mkdir('../../img/', 0777, true);
+        }
+
         if (move_uploaded_file($nombreTmp, $rutaDestino)) {
             $imagen_prod = $nombreArchivoNuevo;
         }
@@ -28,25 +33,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sql = "INSERT INTO productos (categoria_id, codigo_prod, nombre_prod, descripcion_prod, materia_prod, peso_prod, stock_prod, ubicacion_prod, imagen_prod) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("issssdiis", $categoria_id, $codigo_prod, $nombre_prod, $descripcion_prod, $materia_prod, $peso_prod, $stock_prod, $ubicacion_prod, $imagen_prod);
-    $stmt->execute();
+    
+    if (!$stmt) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error al preparar la consulta: ' . $conexion->error
+        ]);
+        exit;
+    }
 
+    $stmt->bind_param("issssdiis", $categoria_id, $codigo_prod, $nombre_prod, $descripcion_prod, $materia_prod, $peso_prod, $stock_prod, $ubicacion_prod, $imagen_prod);
+    
     header('Content-Type: application/json');
 
-    if ($stmt->affected_rows > 0) {
+    if ($stmt->execute()) {
+        $new_product_id = $conexion->insert_id;
+
+        // Fetch the newly inserted product with its category name
+        $sql_fetch = "SELECT p.*, c.nombre_categ 
+                      FROM productos p
+                      LEFT JOIN categorias c ON p.categoria_id = c.id_categ 
+                      WHERE p.id_prod = ?";
+        $stmt_fetch = $conexion->prepare($sql_fetch);
+        $stmt_fetch->bind_param("i", $new_product_id);
+        $stmt_fetch->execute();
+        $result_fetch = $stmt_fetch->get_result();
+        $new_product = $result_fetch->fetch_assoc();
+        $stmt_fetch->close();
+
         echo json_encode([
             'success' => true,
-            'message' => 'Producto agregado correctamente'
+            'message' => 'Producto agregado correctamente',
+            'product' => $new_product // Return the full new product object
         ]);
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'No se pudo agregar el producto'
+            'message' => 'No se pudo agregar el producto: ' . $stmt->error
         ]);
     }
-    exit;
-
+    
     $stmt->close();
     $conexion->close();
+} else {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método no permitido']);
 }
 ?>

@@ -2,7 +2,7 @@
 (function () {
   'use strict'
 
-  console.log("🚀 Módulo clientes.js cargado")
+ 
 
   // Verificar que estamos en la página correcta
   function esClientes() {
@@ -10,11 +10,11 @@
   }
 
   if (!esClientes()) {
-    console.log("⚠️ No estamos en la página de clientes")
+
     return
   }
 
-  console.log("✅ Página de clientes detectada, inicializando...")
+
 
   // Función para copiar texto
   function copiarTexto(elementId, button) {
