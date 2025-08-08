@@ -160,11 +160,11 @@ $dataPedidosPendientes = mysqli_fetch_assoc($resPedidosPendientes);
         </div>
 
         <div class="col-md-6 col-lg-4">
-            <div class="card-inventario" data-page="ventas">
-                <i class="bi bi-cash-coin"></i>
+            <div class="card-inventario" data-page="ventas">    
+                <i class="bi bi-tools"></i>
                 <div>
-                    <p class="card-title">Ventas</p>
-                    <small class="text-muted">Registro de ventas</small>
+                    <p class="card-title">Herramientas</p>
+                    <small class="text-muted">Registro de Herramientas</small>
                 </div>
             </div>
         </div>

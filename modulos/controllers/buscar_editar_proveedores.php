@@ -58,7 +58,7 @@ try {
     echo '</div>';
     
     echo '<div class="col-md-6">';
-    echo '<div class="mb-3">';h
+    echo '<div class="mb-3">';
     echo '<label for="editDireccion" class="form-label">Dirección</label>';
     echo '<input type="text" class="form-control" id="editDireccion" name="direccion_proveedores" value="' . htmlspecialchars($proveedor['direccion_proveedores']) . '">';
     echo '</div>';

@@ -113,7 +113,7 @@
                               <option value="categorias">Categorías</option>
                               <option value="proveedores">Proveedores</option>
                               <option value="clientes">Clientes</option>
-                              <option value="ventas">Ventas</option>
+                              <option value="ventas">Herramientas</option>
                               <option value="pedidos">Pedidos</option>
                           </select>
                       </div>
@@ -142,7 +142,7 @@
     <!-- Modal Ver moderno -->
     <div class="modal fade" id="modalVer" tabindex="-1" aria-labelledby="modalVerLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content border-0 rounded-4 shadow-lg" style="background-color: #3b5680;">
+            <div class="modal-content border-0 rounded-4 shadow-lg" style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);">
 
                 <!-- Encabezado moderno -->
                 <div class="modal-header border-0 px-4 pt-4 text-white">
@@ -180,7 +180,7 @@
                 <form id="formEditar">
 
                     <!-- Encabezado con fondo azul y texto blanco -->
-                    <div class="modal-header border-0 px-4 pt-4 text-white" style="background-color: #3b5680;">
+                    <div class="modal-header border-0 px-4 pt-4 text-white" style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);">
                         <h4 class="modal-title fw-bold text-white" id="modalEditarLabel">
                             <i class="bi bi-pencil-square me-2"></i>Editar registro
                         </h4>
@@ -217,7 +217,7 @@
             <div class="modal-content border-0 rounded-4 shadow-lg">
 
                 <!-- Encabezado con fondo azul -->
-                <div class="modal-header border-0 px-4 pt-4 text-white" style="background-color: #3b5680;">
+                <div class="modal-header border-0 px-4 pt-4 text-white" style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%);">
                     <h5 class="modal-title fw-bold text-white" id="modalEliminarLabel">
                         <i class="bi bi-trash3-fill me-2"></i>Confirmar Eliminación
                     </h5>

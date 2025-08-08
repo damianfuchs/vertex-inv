@@ -1,5 +1,5 @@
 <?php
-include('../db/conexion.php'); // Adjusted path for controller
+include('../db/conexion.php'); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoria_id = $_POST['categoria_id'] ?? null;
@@ -20,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nombreArchivoNuevo = uniqid('img_') . "." . $ext;
         $rutaDestino = "../../img/" . $nombreArchivoNuevo;
 
-        // Ensure the directory exists
         if (!file_exists('../../img/')) {
             mkdir('../../img/', 0777, true);
         }
@@ -42,14 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt->bind_param("issssdiis", $categoria_id, $codigo_prod, $nombre_prod, $descripcion_prod, $materia_prod, $peso_prod, $stock_prod, $ubicacion_prod, $imagen_prod);
+    $stmt->bind_param("issssdiss", $categoria_id, $codigo_prod, $nombre_prod, $descripcion_prod, $materia_prod, $peso_prod, $stock_prod, $ubicacion_prod, $imagen_prod);
     
     header('Content-Type: application/json');
 
     if ($stmt->execute()) {
         $new_product_id = $conexion->insert_id;
 
-        // Fetch the newly inserted product with its category name
+
         $sql_fetch = "SELECT p.*, c.nombre_categ 
                       FROM productos p
                       LEFT JOIN categorias c ON p.categoria_id = c.id_categ 
@@ -64,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode([
             'success' => true,
             'message' => 'Producto agregado correctamente',
-            'product' => $new_product // Return the full new product object
+            'product' => $new_product 
         ]);
     } else {
         echo json_encode([

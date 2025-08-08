@@ -243,36 +243,44 @@ include('./db/conexion.php');
     <!-- Modal Ver -->
     <div class="modal fade" id="modalVerProducto" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-md">
-            <div class="modal-content shadow rounded-4 border-0"
-                style="background-color: #f8f9fa; font-family: 'Nunito Sans', sans-serif;">
+            <div class="modal-content shadow-lg border-0 rounded-4"
+                style="background-color: #fdfdfd; font-family: 'Nunito Sans', sans-serif;">
                 <div class="modal-header bg-info text-white rounded-top-4">
-                    <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Ver Producto</h5>
+                    <h5 class="modal-title d-flex align-items-center">
+                        <i class="bi bi-eye me-2"></i>Ver Producto
+                    </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body px-4 py-3">
-                    <div class="mb-2"><strong>Código:</strong> <span id="verCodigo" class="text-muted">-</span></div>
-                    <div class="mb-2"><strong>Nombre:</strong> <span id="verNombre" class="text-muted">-</span></div>
-                    <div class="mb-2"><strong>Descripción:</strong> <span id="verDescripcion"
-                            class="text-muted">-</span></div>
-                    <div class="mb-2"><strong>Categoría:</strong> <span id="verCategoria" class="text-muted">-</span>
+                    <div class="mb-3"><strong>Código:</strong> <span id="verCodigo" class="text-muted ms-2">-</span>
                     </div>
-                    <div class="mb-2"><strong>Material:</strong> <span id="verMateria" class="text-muted">-</span></div>
-                    <div class="mb-2"><strong>Peso:</strong> <span id="verPeso" class="text-muted">-</span> kg</div>
-                    <div class="mb-2"><strong>Stock:</strong> <span id="verStock" class="text-muted">-</span></div>
-                    <div class="mb-3"><strong>Ubicación:</strong> <span id="verUbicacion" class="text-muted">-</span>
+                    <div class="mb-3"><strong>Nombre:</strong> <span id="verNombre" class="text-muted ms-2">-</span>
                     </div>
+                    <div class="mb-3"><strong>Descripción:</strong> <span id="verDescripcion"
+                            class="text-muted ms-2">-</span></div>
+                    <div class="mb-3"><strong>Categoría:</strong> <span id="verCategoria"
+                            class="text-muted ms-2">-</span></div>
+                    <div class="mb-3"><strong>Material:</strong> <span id="verMateria" class="text-muted ms-2">-</span>
+                    </div>
+                    <div class="mb-3"><strong>Peso:</strong> <span id="verPeso" class="text-muted ms-2">-</span> kg
+                    </div>
+                    <div class="mb-3"><strong>Stock:</strong> <span id="verStock" class="text-muted ms-2">-</span></div>
+                    <div class="mb-4"><strong>Ubicación:</strong> <span id="verUbicacion"
+                            class="text-muted ms-2">-</span></div>
                     <div class="text-center">
                         <img id="verImagen" src="/placeholder.svg" alt="Imagen del producto"
-                            class="img-thumbnail rounded-3 mt-2" style="max-width: 200px; display: none;">
-                        <div id="sinImagen" class="text-muted">Sin imagen</div>
+                            class="img-fluid rounded-3 border mt-2" style="max-width: 200px; display: none;">
+                        <div id="sinImagen" class="text-muted mt-2">Sin imagen</div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4"
+                        data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Modal Editar -->
     <div class="modal fade" id="modalEditarProducto" tabindex="-1" aria-hidden="true">

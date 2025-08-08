@@ -134,7 +134,7 @@ include('./db/conexion.php'); // Ajusta la ruta si es necesario
 
         <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#modalAgregarCategoria"
             style="background: linear-gradient(135deg, #1f2c4c 0%, #3b5680 100%); border: none; color: white;">
-            <i class="bi bi-plus-circle-fill"></i> Agregar Categoría
+            <i class="bi bi-tag"></i> Agregar Categoría
         </button>
 
         <div id="mensajeCategoria" class="alert mensaje-flotante d-none" role="alert"></div>
@@ -274,7 +274,7 @@ include('./db/conexion.php'); // Ajusta la ruta si es necesario
                     action="modulos/controllers/agregar_categoria.php">
                     <div class="modal-header bg-success text-white">
                         <h5 class="modal-title" id="modalAgregarLabel">
-                            <i class="bi bi-plus-circle me-2"></i>Agregar Categoría
+                            <i class="bi bi-tag"></i> Agregar Categoría
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Cerrar"></button>
